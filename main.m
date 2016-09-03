@@ -7,7 +7,7 @@ rghtStart = robot.encoders.LatestMessage.Data(2);
 signedDistance = 0;
 
 startTime = tic;
-while(signedDistance<175)
+while(signedDistance<200)
     pause(0.1)
     sendVelocity(robot, 0.05, 0.05)
 
@@ -16,13 +16,13 @@ while(signedDistance<175)
     signedDistance = ((leftDistance) + (rghtDistance))/2;
     
     AddToArrays(plot, toc(startTime), leftDistance, rghtDistance);
-    
+    pause(0.05)
 end
 pause(0.1)
 sendVelocity(robot, 0, 0)
 pause(2)
 
-while(signedDistance> -79.8)
+while(signedDistance> -104.8)
     pause(0.1)
     sendVelocity(robot, -0.05, -0.05)
     
@@ -31,8 +31,7 @@ while(signedDistance> -79.8)
     signedDistance = ((leftDistance) + (rghtDistance))/2;
     
     AddToArrays(plot, toc(startTime), leftDistance, rghtDistance);
-    
-    
+    pause(0.05)
 end
 pause(0.1)
 sendVelocity(robot, 0, 0)
