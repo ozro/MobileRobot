@@ -1,27 +1,34 @@
 %% Lab1 Challenge
+plot = DisplacementLinePlotter();
+
 leftStart = robot.encoders.LatestMessage.Data(1);
 rghtStart = robot.encoders.LatestMessage.Data(2);
 
 signedDistance = 0;
 
 startTime = tic;
-while(signedDistance<2)
-    sendVelocity(robot, 0.5, 0.5)
+while(signedDistance<200)
+    sendVelocity(robot, 0.05, 0.05)
     
     leftDistance = robot.encoders.LatestMessage.Data(1) - leftStart;
     rghtDistance = robot.encoders.LatestMessage.Data(2) - rghtStart;
     signedDistance = ((leftDistance) + (rghtDistance))/2;
+    
+    AddToArrays(plot, toc(startTime), leftDistance, rghtDistance);
     
     pause(0.05)
 end
 sendVelocity(robot, 0, 0)
-pause(0.05)
-while(signedDistance>0)
-    sendVelocity(robot, -0.5, 0.5)
+pause(2)
+
+while(signedDistance> -104.8)
+    sendVelocity(robot, -0.05, -0.05)
     
     leftDistance = robot.encoders.LatestMessage.Data(1) - leftStart;
     rghtDistance = robot.encoders.LatestMessage.Data(2) - rghtStart;
     signedDistance = ((leftDistance) + (rghtDistance))/2;
+    
+    AddToArrays(plot, toc(startTime), leftDistance, rghtDistance);
     
     pause(0.05)
 end

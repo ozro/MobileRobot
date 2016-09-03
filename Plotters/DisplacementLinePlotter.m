@@ -7,7 +7,7 @@ classdef DisplacementLinePlotter<handle
         plotObjs
     end
     methods
-        function obj = DisplacementLinePlotter(obj)
+        function obj = DisplacementLinePlotter()
             obj.plotObjs = plot(obj.timeArray, obj.leftArray, obj.timeArray, obj.rghtArray, obj.timeArray, obj.displacementArray);
         end
         
@@ -17,6 +17,7 @@ classdef DisplacementLinePlotter<handle
             obj.leftArray = cat(1, obj.leftArray, left);
             obj.rghtArray = cat(1, obj.rghtArray, rght);
             obj.displacementArray = (obj.leftArray+obj.rghtArray)/2;
+            PlotArrays(obj);
         end
         
         function obj = ClearArrays(obj)
@@ -27,7 +28,6 @@ classdef DisplacementLinePlotter<handle
         
         function PlotArrays(obj)
             plot(obj.timeArray, obj.leftArray, obj.timeArray, obj.rghtArray, obj.timeArray, obj.displacementArray)
-            axis([0,5,0,200])
         end
     end
 end
