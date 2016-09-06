@@ -9,7 +9,7 @@ startTime = tic;
 leftStart = robot.encoders.LatestMessage.Data(1);
 rghtStart = robot.encoders.LatestMessage.Data(2);
 
-while(signedDistance < 187.5)
+while(signedDistance < 304.5)
     pause(0.1);
     sendVelocity(robot, 0.05, 0.05);
     
