@@ -27,7 +27,7 @@ classdef DisplacementLinePlotter<handle
         end
         
         function PlotArrays(obj)
-            plot(obj.timeArray, obj.leftArray, obj.timeArray, obj.rghtArray)
+            plot(obj.timeArray, obj.leftArray, obj.timeArray, obj.rghtArray, obj.timeArray, obj.displacementArray)
         end
     end
 end
