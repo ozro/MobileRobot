@@ -33,8 +33,9 @@ while(signedDis2 > -281.8)
     
     leftPos = robot.encoders.LatestMessage.Data(1);
     rghtPos = robot.encoders.LatestMessage.Data(2);
+    signedDis2 = ((leftPos-lStart2) + (rghtPos-rStart2))/2;
     
-    pause(0.05)
+    AddToArrays(plot, toc(startTime), leftPos-leftStart, rghtPos-rghtStart);
 end
 pause(0.15);
 sendVelocity(robot, 0.0, 0.0);
