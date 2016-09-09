@@ -4,6 +4,8 @@ classdef NohBot<handle
     properties
         %% Final parameters
         width
+        indexSpacing
+        forwardIndex
         
         % Initialized in the constructor
         startTic
@@ -78,6 +80,14 @@ classdef NohBot<handle
             obj.velLog = zero(1,2);
             obj.avgVelLog = zero(1,1);
             obj.angVelLog = zero(1,1);
+        end
+        
+        %% Calculation
+        function [x, y, b] = irToXy(obj, i, r)
+            b = (i - obj.forwardIndex)*obj.indexSpacing;
+            absBearing = obj.yaw + b;
+            x = cos(absBearing) * r;
+            y = sin(absBearing) * r;
         end
         
         %% Wrappers
