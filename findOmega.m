@@ -4,9 +4,8 @@ function omega = findOmega(V,bearing,dist)
         return;
     end
     theta = 2*bearing;
-
-    S = solve(dist*dist==2*R*R - 2*R*R*cosd(theta), R);
-    R = abs(S(1));
-    curv = 1/R;
+    
+    r = sqrt(dist*dist/(2-2*cosd(theta)));
+    curv = 1/r;
     omega = curv * V;
 end

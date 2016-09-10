@@ -20,6 +20,11 @@ robot.startLaser()
 pause(3)
 
 plot = PointPlotter();
+plot2 = DisplacementLinePlotter();
+start = tic;
+
+leftStart = robot.encoders.LatestMessage.Data(1);
+rghtStart = robot.encoders.LatestMessage.Data(2);
 
 % look at the ranges (there are 360 of them)
 while(true)
@@ -42,6 +47,11 @@ while(true)
     y = min * sind(index);
     UpdatePoints(plot,x,y);
     
+    leftD = robot.encoders.LatestMessage.Data(1) - leftStart;
+    rghtD = robot.encoders.LatestMessage.Data(2) - rghtStart;
+    
+    AddToArrays(plot2, toc(start), leftD, rghtD);
+    
     if(min < 1)
         robot.sendVelocity(-0.15*(1-min),-0.15*(1-min));
     end
@@ -50,8 +60,8 @@ while(true)
     if (index>90)
         omega = omega * (-1);
     end
-    vr = 0.15 + omega*0.0445
-    vl = 0.15 - omega*0.0445
+    vr = 0.15 + omega*0.0445;
+    vl = 0.15 - omega*0.0445;
     robot.sendVelocity(vl, vr);
     pause(0.2)
 end
