@@ -4,10 +4,12 @@ classdef PointPlotter
         pointY = 0;
         
         fig;
+        axisLim;
     end
     
     methods
-        function obj = PointPlotter()
+        function obj = PointPlotter(xmin, xmax, ymin, ymax)
+            obj.axisLim = [xmin, xmax, ymin, ymax];
             obj.fig = figure();
             PlotArrays(obj);
         end
@@ -21,8 +23,12 @@ classdef PointPlotter
         function PlotArrays(obj)
             figure(obj.fig);
             clf;
-            plot(0,0, 'ks', -obj.pointY, obj.pointX, 'r*');
-            axis([-2,2,-2,2])
+            if(isEqual([obj.pointX, obj.pointY], [0,0]))
+                plot(0,0, 'ks');
+            else
+                plot(0,0, 'ks', -obj.pointY, obj.pointX, 'r*');
+            end
+            axis(obj.axisLim);
         end
     end
     

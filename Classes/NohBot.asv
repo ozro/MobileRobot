@@ -3,7 +3,7 @@ classdef NohBot<handle
     
     properties
         %% Final parameters
-        width = 8.9/100;
+        width
         
         % Initialized in the constructor
         startTic
@@ -57,7 +57,7 @@ classdef NohBot<handle
             obj.startTic = tic;
         end
         
-        function obj = reset(obj)
+        function obj = restart(obj)
             obj.startTic = tic;
             obj.prevTic = tic;
             obj.deltaTime = 0;
@@ -81,23 +81,19 @@ classdef NohBot<handle
         end
         
         %% Calculation
-        function [velL, velR] = angVelToWheel(obj, angVel)
-            velL = 0.15 - angVel*obj.width/2;
-            velR = 0.15 + angVel*obj.width/2;
-        end
-        
-        %% Command Wrappers
-        function move(obj, leftVel, rightVel)
+        function [
+        %% Wrappers
+        function moveRobot(obj, leftVel, rightVel)
             sendVelocity(obj.robot, leftVel, rightVel);
             pause(0.01);
         end
         
-        function laserOn(obj)
+        function startLaser(obj)
             obj.rasp.startLaser();
             pause(3);
         end
         
-        function laserOff(obj)
+        function stopLaser(obj)
             obj.rasp.stopLaser();
         end
         
