@@ -4,11 +4,11 @@ classdef DisplacementLinePlotter<handle
         leftArray = zeros(1,1)
         rghtArray = zeros(1,1)
         displacementArray = zeros(1,1);
-        plotObjs
+        fig; % Handle for figure object
     end
     methods
         function obj = DisplacementLinePlotter()
-            obj.plotObjs = plot(obj.timeArray, obj.leftArray, obj.timeArray, obj.rghtArray, obj.timeArray, obj.displacementArray);
+            obj.fig = figure();
         end
         
         function obj = AddToArrays(obj, time, left,rght)
@@ -27,7 +27,9 @@ classdef DisplacementLinePlotter<handle
         end
         
         function PlotArrays(obj)
-            plot(obj.timeArray, obj.leftArray, obj.timeArray, obj.rghtArray)
+            figure(obj.fig);
+            clf;
+            plot(obj.timeArray, obj.leftArray, obj.timeArray, obj.rghtArray);
         end
     end
 end
