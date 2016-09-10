@@ -9,6 +9,7 @@ classdef PointPlotter
     methods
         function obj = PointPlotter()
             obj.fig = figure();
+            PlotArrays(obj);
         end
         
         function obj = UpdatePoints(obj, x, y)
@@ -20,8 +21,8 @@ classdef PointPlotter
         function PlotArrays(obj)
             figure(obj.fig);
             clf;
-            plot(0,0, 'ks', obj.pointX, obj.pointY, 'ro');
-            axis([-100,100,-100,100])
+            plot(0,0, 'ks', -obj.pointY, obj.pointX, 'ro');
+            axis([-2,2,-2,2])
         end
     end
     
