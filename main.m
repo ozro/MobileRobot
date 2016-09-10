@@ -33,7 +33,7 @@ while(true)
     for i = [1:91,270:360]
         if (r(i)<=1.5 && r(i)>=0.6 && r(i)<min )
             min = r(i);
-            index = i;
+            index = i-1;
         end
     end
     clc
@@ -42,7 +42,17 @@ while(true)
     y = min * sind(index);
     UpdatePoints(plot,x,y);
     
-    robot.sendVelocity((min-1)/2, (min-1)/2);
+    if(min < 1)
+        robot.sendVelocity(-0.15*(1-min),-0.15*(1-min));
+    end
+    
+    omega = findOmega(0.15,index,min);
+    if (index>90)
+        omega = omega * (-1);
+    end
+    vr = 0.15 + omega*0.0445
+    vl = 0.15 - omega*0.0445
+    robot.sendVelocity(vl, vr);
     pause(0.2)
 end
 
