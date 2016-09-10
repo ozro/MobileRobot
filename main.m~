@@ -22,9 +22,6 @@ pause(3)
 plot = PointPlotter();
 plot2 = DisplacementLinePlotter();
 start = tic;
-sTime = tic;
-isTarget = true;
-prev = 1.6;
 
 leftStart = robot.encoders.LatestMessage.Data(1);
 rghtStart = robot.encoders.LatestMessage.Data(2);
@@ -44,18 +41,8 @@ while(true)
             index = i-1;
         end
     end
-    if(min ~= 1.6)
-        isTarget = true;
-        sTime = tic;
-        prev = min;
-    elseif(toc(sTime) <= 0.75)
-        isTarget = true;
-        min = prev;
-    else
-        isTarget = false;
-        robot.sendVelocity(0,0)
-    end        
-    if isTarget
+    if min ~= 1.6
+        s
         clc
         disp(min)
         x = min * cosd(index);
