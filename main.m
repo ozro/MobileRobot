@@ -12,17 +12,17 @@ hasTarget = true;
 
 %% Parameters
 detectDist = 1.5;
-followDist = 1;
+followDist = 0.5;
 followSpeed = 0.15;
 
 %% Main loop
 while(true)
-    ranges = robot.laser.LatestMessage.Ranges;
+    ranges = robot.laserRanges();
     
     targetDist = detectDist + 1;
     targetBearing = 0;
     for i = [1:91,270:360]
-        if (ranges(i)<=1.5 && ranges(i)>=0.6 && ranges(i)<targetDist )
+        if (ranges(i)<=1.5 && ranges(i)>=0.06 && ranges(i)<targetDist )
             targetDist = ranges(i);
             targetBearing = i-1;
         end

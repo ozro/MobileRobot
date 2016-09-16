@@ -23,14 +23,9 @@ classdef PointPlotter
         function PlotArrays(obj)
             figure(obj.fig);
             clf;
-            if(isEqual([obj.pointX, obj.pointY], [0,0]))
-                plot(0,0, 'ks');
-            else
-                plot(0,0, 'ks', -obj.pointY, obj.pointX, 'r*');
-            end
+            plot(0,0, 'ks', -obj.pointY, obj.pointX, 'r*');
             axis(obj.axisLim);
         end
-    end
-    
+    end 
 end
 

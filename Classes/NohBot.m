@@ -36,12 +36,12 @@ classdef NohBot<handle
         
         %% Data
         % Logs are synced to timeLog
-        timeLog = zero(1,1);
-        encoderLog = zero(1,2); % L, R
-        posLog = zero(1,2); % x, y
-        velLog = zero(1,2); % L, R
-        avgVelLog = zero(1,1);
-        angVelLog = zero(1,1);
+        timeLog = zeros(1,1);
+        encoderLog = zeros(1,2); % L, R
+        posLog = zeros(1,2); % x, y
+        velLog = zeros(1,2); % L, R
+        avgVelLog = zeros(1,1);
+        angVelLog = zeros(1,1);
         
         %% Objects
         % Actual ROS robot object
@@ -51,35 +51,13 @@ classdef NohBot<handle
     methods
         %% Initialization
         function obj = NohBot()
+            close all;
             rosshutdown();
             obj.rasp = raspbot();
             sendVelocity(obj.rasp,0,0)
             obj.startTic = tic;
         end
-        
-        function obj = reset(obj)
-            obj.startTic = tic;
-            obj.prevTic = tic;
-            obj.deltaTime = 0;
-            
-            obj.xPos = 0;
-            obj.yPos = 0;
-            obj.yaw = pi/2;
-            obj.encoderL = 0;
-            obj.encoderR = 0;
-            obj.velL = 0;
-            obj.velR = 0;
-            obj.avgVel = 0;
-            obj.angVel = 0;
-            
-            obj.timeLog = zero(1,1);
-            obj.encoderLog = zero(1,2);
-            obj.posLog = zero(1,2);
-            obj.velLog = zero(1,2);
-            obj.avgVelLog = zero(1,1);
-            obj.angVelLog = zero(1,1);
-        end
-        
+                
         %% Calculation
         function [velL, velR] = angVelToWheel(obj, angVel)
             velL = 0.15 - angVel*obj.width/2;
@@ -88,7 +66,7 @@ classdef NohBot<handle
         
         %% Command Wrappers
         function move(obj, leftVel, rightVel)
-            sendVelocity(obj.robot, leftVel, rightVel);
+            sendVelocity(obj.rasp, leftVel, rightVel);
             pause(0.01);
         end
         
@@ -101,6 +79,9 @@ classdef NohBot<handle
             obj.rasp.stopLaser();
         end
         
+        function ranges = laserRanges(obj)
+            ranges = obj.rasp.laser.LatestMessage.Ranges;
+        end
         %% Update functions
         function obj = update(obj)
             obj.deltaTime = toc(obj.prevTic);
