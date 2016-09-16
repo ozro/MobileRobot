@@ -26,6 +26,7 @@ classdef NohBot<handle
         % Current encoder values
         encoderL = 0;
         encoderR = 0;
+        encoderT = 0;
         
         % Instantaneous velocities in each wheel
         velL = 0;
@@ -97,8 +98,9 @@ classdef NohBot<handle
         end
         
         function obj = GetEncoders(obj)
-            obj.encoderL = obj.rasp.encoders.LatestMessage.Data(1);
-            obj.encoderR = obj.rasp.encoders.LatestMessage.Data(2);
+            obj.encoderL = obj.rasp.encoders.LatestMessage.X;
+            obj.encoderR = obj.rasp.encoders.LatestMessage.Y;
+            obj.encoderT = double(robot.encoders.LatestMessage.Header.Stamp.Sec) + double(robot.encoders.LatestMessage.Header.Stamp.Nsec)/1e9;
         end
         
         function obj = GetVel(obj)
