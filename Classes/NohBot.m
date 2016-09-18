@@ -57,6 +57,19 @@ classdef NohBot<handle
             obj.rasp = raspbot();
             sendVelocity(obj.rasp,0,0)
             obj.startTic = tic;
+            
+            global encoderData;
+            global encoderTime;
+            global laserData;
+            global laserTime;
+            
+            encoderData = zeros(1,2);
+            encoderTime = 0;
+            laserData = zeros(1, 360);
+            laserTime = 0;
+                        
+            obj.rasp.encoders.NewMessageFcn =@EncoderListener;
+            obj.rasp.laser.NewMessageFcn = @LaserListener;
         end
                 
         %% Calculation
@@ -97,10 +110,18 @@ classdef NohBot<handle
             UpdateLogs(obj)
         end
         
-        function obj = GetEncoders(obj)
-            obj.encoderL = obj.rasp.encoders.LatestMessage.X;
-            obj.encoderR = obj.rasp.encoders.LatestMessage.Y;
-            obj.encoderT = double(robot.encoders.LatestMessage.Header.Stamp.Sec) + double(robot.encoders.LatestMessage.Header.Stamp.Nsec)/1e9;
+        function enc = GetEncoders(obj)
+            global encoderData;
+            global encoderTime;
+%             l = obj.rasp.encoders.LatestMessage.Vector.X;
+%             r = obj.rasp.encoders.LatestMessage.Vector.Y;
+%             t = double(obj.rasp.encoders.LatestMessage.Header.Stamp.Sec) + double(obj.rasp.encoders.LatestMessage.Header.Stamp.Nsec)/1e9;
+    
+            disp(encoderData);
+            l = encoderData(1);
+            r = encoderData(2);
+            t = encoderTime;
+            enc = [l, r, t];
         end
         
         function obj = GetVel(obj)
