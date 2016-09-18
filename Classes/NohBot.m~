@@ -54,9 +54,7 @@ classdef NohBot<handle
         function obj = NohBot()
             close all;
             rosshutdown();
-            pause(0.1);
             obj.rasp = raspbot();
-            pause(0.2);
             sendVelocity(obj.rasp,0,0)
             obj.startTic = tic;
             
@@ -64,9 +62,7 @@ classdef NohBot<handle
             global encoderTime;
             global laserData;
             global laserTime;
-            global sTime;
             
-            sTime = double(obj.rasp.encoders.LatestMessage.Header.Stamp.Sec) + double(obj.rasp.encoders.LatestMessage.Header.Stamp.Nsec)/1e9;
             encoderData = zeros(1,2);
             encoderTime = 0;
             laserData = zeros(1, 360);
@@ -115,17 +111,17 @@ classdef NohBot<handle
         end
         
         function enc = GetEncoders(obj)
-%             global encoderData;
-%             global encoderTime;
-            l = obj.rasp.encoders.LatestMessage.Vector.X;
-            r = obj.rasp.encoders.LatestMessage.Vector.Y;
-            t = double(obj.rasp.encoders.LatestMessage.Header.Stamp.Sec) + double(obj.rasp.encoders.LatestMessage.Header.Stamp.Nsec)/1e9;
+            global encoderData;
+            global encoderTime;
+%             l = obj.rasp.encoders.LatestMessage.Vector.X;
+%             r = obj.rasp.encoders.LatestMessage.Vector.Y;
+%             t = double(obj.rasp.encoders.LatestMessage.Header.Stamp.Sec) + double(obj.rasp.encoders.LatestMessage.Header.Stamp.Nsec)/1e9;
     
-%             disp(encoderData);
-%             l = encoderData(1);
-%             r = encoderData(2);
-%             t = encoderTime;
-             enc = [l, r, t];
+            disp(encoderData);
+            l = encoderData(1);
+            r = encoderData(2);
+            t = encoderTime;
+            enc = [l, r, t];
         end
         
         function obj = GetVel(obj)
