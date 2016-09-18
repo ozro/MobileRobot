@@ -115,10 +115,6 @@ classdef NohBot<handle
         function laserOff(obj)
             obj.rasp.stopLaser();
         end
-        
-        function ranges = laserRanges(obj)
-            ranges = obj.rasp.laser.LatestMessage.Ranges;
-        end
 
     end
 end

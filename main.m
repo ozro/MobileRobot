@@ -41,6 +41,7 @@ prevEnc = encoderData;
 while(t < tf)
     t = encoderTime - sTime;
     if(t > tf)
+        robot.move(0,0);
         break;
     end
     dt = t - prevT;
@@ -79,11 +80,14 @@ while(t < tf)
     prevEnc = enc;
         
     set(realP, 'xdata', [get(realP, 'xdata') rx], 'ydata', [get(realP, 'ydata') ry]);
-
     pause(0.005);
 end
-pause(0.005);
-robot.move(0,0);
+stop = 0;
+while(stop < 5)
+    stop = stop + 0.01;
+    robot.move(0,0);
+    pause(0.005);
+end
  
 % t = 0;
 % dt = 0.1;
