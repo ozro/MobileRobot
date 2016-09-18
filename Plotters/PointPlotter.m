@@ -24,7 +24,6 @@ classdef PointPlotter
             figure(obj.fig);
             clf;
             plot(0,0, 'ks', -obj.pointY, obj.pointX, 'r*');
-            axis(obj.axisLim);
         end
     end 
 end

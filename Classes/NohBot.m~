@@ -54,7 +54,9 @@ classdef NohBot<handle
         function obj = NohBot()
             close all;
             rosshutdown();
+            pause(0.1);
             obj.rasp = raspbot();
+            pause(0.2);
             sendVelocity(obj.rasp,0,0)
             obj.startTic = tic;
             
@@ -62,7 +64,9 @@ classdef NohBot<handle
             global encoderTime;
             global laserData;
             global laserTime;
+            global sTime;
             
+            sTime = double(obj.rasp.encoders.LatestMessage.Header.Stamp.Sec) + double(obj.rasp.encoders.LatestMessage.Header.Stamp.Nsec)/1e9;
             encoderData = zeros(1,2);
             encoderTime = 0;
             laserData = zeros(1, 360);
@@ -78,6 +82,14 @@ classdef NohBot<handle
             velR = 0.15 + angVel*obj.width/2;
         end
         
+        function obj = wheelToAngVel(obj, v)
+            obj.angVel = (obj.velR - obj.velL)/obj.width;
+        end
+        
+        function [x, y, th] = modelDiffSteerRobot(obj, vl, vr, t0, tf, dt )
+            omega = 
+        end
+
         %% Command Wrappers
         function move(obj, leftVel, rightVel)
             sendVelocity(obj.rasp, leftVel, rightVel);
@@ -110,20 +122,6 @@ classdef NohBot<handle
             UpdateLogs(obj)
         end
         
-        function enc = GetEncoders(obj)
-            global encoderData;
-            global encoderTime;
-%             l = obj.rasp.encoders.LatestMessage.Vector.X;
-%             r = obj.rasp.encoders.LatestMessage.Vector.Y;
-%             t = double(obj.rasp.encoders.LatestMessage.Header.Stamp.Sec) + double(obj.rasp.encoders.LatestMessage.Header.Stamp.Nsec)/1e9;
-    
-            disp(encoderData);
-            l = encoderData(1);
-            r = encoderData(2);
-            t = encoderTime;
-            enc = [l, r, t];
-        end
-        
         function obj = GetVel(obj)
             [prevL, prevR] = obj.encoderLog(end,:);
             dispL = obj.encoderL - prevL;
@@ -135,10 +133,6 @@ classdef NohBot<handle
         
         function obj = GetAvgVel(obj)
             obj.avgVel = (obj.velL + obj.velR)/2;
-        end
-        
-        function obj = GetAngVel(obj)
-            obj.angVel = (obj.velR - obj.velL)/obj.width;
         end
         
         function obj = GetPos(obj)
