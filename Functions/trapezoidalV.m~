@@ -1,8 +1,11 @@
 function uref = trapezoidalV(t, aMax, vMax, dist, sgn)
     tRamp = vMax/aMax;
     tf = dist/vMax + tRamp;
+    
+    vMax * (tf - tRamp) = dist
+    0.25 * (
 
-    if(t < 0 || t > tf)
+    if(t < 0 || tf - t < 0)
         uref = 0;
         return;
     end
