@@ -5,6 +5,10 @@ classdef NohBot<handle
         %% Final parameters
         width = 8.9/100;
         
+        %delay = 0.33;
+        
+        delay = 0;
+        
         % Initialized in the constructor
         startTic
         
