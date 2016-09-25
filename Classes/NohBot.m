@@ -7,7 +7,7 @@ classdef NohBot<handle
         
         %delay = 0.33;
         
-        delay = 0.62;
+        delay = 0.575;
         
         % Initialized in the constructor
         startTic

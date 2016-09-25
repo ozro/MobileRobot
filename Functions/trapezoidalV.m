@@ -4,20 +4,17 @@ function uref = trapezoidalV(t, aMax, vMax, dist, sgn)
 
     if(t < 0 || t > tf)
         uref = 0;
-        return;
-    end
+    else
             
-    if(t < tRamp)
-        uref = aMax * t * sgn;
-        return;
-    end
-    if(tf-t< tRamp)
-        uref = aMax * (tf-t) * sgn;
-        return;
-    end
-    if(t>tRamp && t<(tf-tRamp))
-        uref = vMax * sgn;
-        return;
+        if(t < tRamp)
+            uref = aMax * t * sgn;
+        end
+        if(tf-t< tRamp)
+            uref = aMax * (tf-t) * sgn;
+        end
+        if(t>tRamp && t<(tf-tRamp))
+            uref = vMax * sgn;
+        end
     end
 end
 
