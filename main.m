@@ -21,7 +21,7 @@ prevS = 0;
 
 Ie = 0;
 target = 1.02;
-while(t < 7)
+while(t < 8)
     t = encoderTime - sTime;
     dt = t - prevTime;
     if(dt == 0)
@@ -51,7 +51,8 @@ while(t < 7)
 
         eV = kP * Pe + kD * De + kI * Ie;
     else
-        ev = 0;
+        eV = 0;
+        Pe = 0;
     end
     
     V = uRef+eV;
