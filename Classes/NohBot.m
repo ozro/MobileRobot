@@ -56,27 +56,28 @@ classdef NohBot<handle
             close all;
             rosshutdown();
             pause(0.1);
+            
             obj.rasp = raspbot();
             pause(0.2);
             sendVelocity(obj.rasp,0,0)
             obj.startTic = tic;
-            
+
             global encoderData;
             global encoderTime;
             global laserData;
             global laserTime;
             global sTime;
-            
+
             sTime = double(obj.rasp.encoders.LatestMessage.Header.Stamp.Sec) + double(obj.rasp.encoders.LatestMessage.Header.Stamp.Nsec)/1e9;
             enc = zeros(1,2);
             enc(1) = obj.rasp.encoders.LatestMessage.Vector.X;
             enc(2) = obj.rasp.encoders.LatestMessage.Vector.Y;
             encoderData = enc;
             encoderTime = sTime;
-            
+
             %laserData = obj.rasp.laser.LatestMessage.Ranges;
             laserTime = sTime;
-                        
+
             obj.rasp.encoders.NewMessageFcn =@EncoderListener;
             obj.rasp.laser.NewMessageFcn = @LaserListener;
         end
@@ -87,8 +88,9 @@ classdef NohBot<handle
             velR = vel + angVel*obj.width/2;
         end
         
-        function angVel = wheelToAngVel(obj, vl, vr)
+        function [vel, angVel] = wheelToAngVel(obj, vl, vr)
             angVel = (vr - vl)/obj.width;
+            vel = (vr+vl)/2;
         end
         
         function [x, y, th] = modelDiffSteerRobot(obj, vl, vr, t0, tf, dt )
