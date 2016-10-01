@@ -1,0 +1,15 @@
+ref = RefCon(2,1,0.5);
+tf = ref.getTrajDuration();
+traj = RobotTrajectory(0, tf+1, ref);
+
+plot(traj.pose(1), traj,
+
+% robot = NohBot();
+% ref = RefCon(2, 1, 0.5);
+% 
+% sTime = tic;
+% while(true)
+%     [vel, angvel] = ref.computeControl(toc(sTime));
+%     [vl, vr] = robot.angVelToWheel(vel, angvel);
+%     robot.move(vl, vr);
+% end

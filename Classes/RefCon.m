@@ -24,7 +24,7 @@ classdef RefCon
                 vel = 0;
                 angVel = 0;
                 return;
-            elseif (t > Tf)
+            elseif (t > Tf/obj.ks)
                 vel = 0;
                 angVel = 0;
                 return
