@@ -5,7 +5,7 @@ classdef NohBot<handle
         %% Final parameters
         width = 8.9/100;
         
-        delay = 0.2;
+        delay = 0.1;
         
         %delay = 0.575;
         
@@ -110,7 +110,13 @@ classdef NohBot<handle
         %% Command Wrappers
         function move(obj, leftVel, rightVel)
             sendVelocity(obj.rasp, leftVel, rightVel);
-            pause(0.005);
+            pause(0.001);
+        end
+        
+        function moveAng(obj, vel, angVel)
+            [vl, vr] = obj.angVelToWheel(vel, angVel);
+            sendVelocity(obj.rasp, vl, vr);
+            pause(0.001);
         end
         
         function laserOn(obj)

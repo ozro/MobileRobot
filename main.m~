@@ -1,4 +1,4 @@
-ref = RefCon(3,1,0.5);
+ref = RefCon(1,1,0.5);
 tf = ref.getTrajDuration() + 1;
 traj = RobotTrajectory(0, tf, ref);
 robot = NohBot();
@@ -47,20 +47,26 @@ while(t<tf)
     [v,w] = robot.wheelToAngVel(vl,vr);
     
     v1 = (prevV + v) / 2;
-    w1 = (prevW + w) / 2;
-    
-    b = b + w1 * dt/2;
-    x = x + v * cos(b) * dt;
-    y = y + v * sin(b) * dt;
-    b = b + w1 * dt/2;
+    w1 = w +;
+  
+    b = b + w1 * dT;
+    x = x + v * cos(b) * dT;
+    y = y + v * sin(b) * dT;
     
     prevV = v;
     prevW = w;
     
-    realPose = [x, y, b];
-    refPose = traj.getPose(t);
+    realPoseW = [x, y, b];
+    refPoseW = traj.getPose(t);
     
-    ePose = refPose - realPose;
+    ePoseW = refPoseW - realPoseW;
+    
+    [vel, angvel] = ref.computeControl(t);
+    robot.moveAng(vel, angvel);
+    
+    plot(realPoseW(1), realPoseW(2), 'o');
+    axis([-0.2, 0.2, -0.2, 0.2]);
+    
 end
 
 
