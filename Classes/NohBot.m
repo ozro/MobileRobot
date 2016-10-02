@@ -5,7 +5,7 @@ classdef NohBot<handle
         %% Final parameters
         width = 8.9/100;
         
-        delay = 0.1;
+        delay = 0.2;
         
         %delay = 0.575;
         

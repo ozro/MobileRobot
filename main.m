@@ -1,7 +1,8 @@
-ref = RefCon(2,1,0.5);
-traj = RobotTrajectory(0, tf, ref);
 robot = NohBot();
-contrl = controller(robot, ref, traj);
+ref = RefCon(3,1,0.5);
+tf = ref.getTrajDuration() + 1;
+traj = RobotTrajectory(0, tf, ref);
+contrl = controller(robot, ref, traj, true);
 contrl.run();
 
 
