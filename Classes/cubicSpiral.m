@@ -86,9 +86,10 @@ classdef cubicSpiral < handle
                     x=0.0; y = 0.0; t = 0.0; r = 0.0;
                     broke = false;
                     for i=1:clothSamples
-                    % Compute the curve. Break out of this loop, and then 
-                    % immediately continue to next iteration of the for b loop 
-                    % if tmax is exceeded in absolute value at any time.
+                        s = i*ds;
+                        k = s*(a+b*s)*(s-sf);
+                        th = obj.poseArray(3, i) + k * ds;
+                        broke = th>tmax;
                     end
                     if(broke == true); continue; end;
 
