@@ -253,6 +253,14 @@ classdef cubicSpiral < handle
             ds = sf/(obj.numSamples-1);
             for i=1:obj.numSamples-1
                 % fill this in
+                s = i*ds;
+                obj.distArray(i+1) = s;
+                k = s*(a+b*s)*(s-sf);
+                obj.curvArray(i+1)= k;
+                th = obj.poseArray(3, i) + k * ds;
+                obj.poseArray(3, i+1) = th;
+                obj.poseArray(1, i+1) = obj.poseArray(1, i) + cos(th) * ds;
+                obj.poseArray(2, i+1) = obj.poseArray(2, i) + sin(th) * ds;
             end
             i = obj.numSamples;
             s = (i-1)*ds;  
