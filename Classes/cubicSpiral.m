@@ -87,9 +87,15 @@ classdef cubicSpiral < handle
                     broke = false;
                     for i=1:clothSamples
                         s = i*ds;
-                        k = s*(a+b*s)*(s-sf);
-                        th = obj.poseArray(3, i) + k * ds;
-                        broke = th>tmax;
+                        k = s*(a+b*s)*(s-sMax);
+                        t = t + k * ds;
+                        x = x + cos(t) * ds;
+                        y = y + sin(t) * ds;
+                        r = r + k^2 * ds;
+                        if(abs(t)>tmax)
+                            broke = true;
+                            break;
+                        end
                     end
                     if(broke == true); continue; end;
 
