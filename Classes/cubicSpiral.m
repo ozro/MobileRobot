@@ -92,7 +92,7 @@ classdef cubicSpiral < handle
                         x = x + cos(t) * ds;
                         y = y + sin(t) * ds;
                         r = r + k^2 * ds;
-                        if(abs(t)>tmax)
+                        if(abs(t)>tMax)
                             broke = true;
                             break;
                         end
