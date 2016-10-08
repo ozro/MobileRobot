@@ -20,7 +20,7 @@ classdef controller
             prevt = 0;
             start = tic;
             
-            tf = obj.ref.getTrajDuration() + 1;
+            tf = obj.ref.getTrajDuration() + 1.5;
 
             global encoderData;
             global encoderTime;
@@ -105,19 +105,20 @@ classdef controller
                 realArray(end + 1, :) = realPoseW;
                 refArray(end + 1, :) = refPoseW;
                 errorArray(end + 1, :) = ePoseR;
+               
             end
-            figure(1);
-            title('Trajectory vs time')
-            a1 = plot(timeArray, refArray(:,1), timeArray, realArray(:,1),timeArray, refArray(:,2), timeArray, realArray(:,2),timeArray, refArray(:,3), timeArray, realArray(:,3));
-            legend(a1, 'ref x', 'real x', 'ref y', 'real y', 'ref th', 'real th');
-            figure(2);
-            title('Position graph')
-            a2 = plot(refArray(:,1), refArray(:,2), realArray(:,1), realArray(:,2));
-            legend(a2, 'ref', 'real');
-            figure(3);
-            title('Error vs Time');
-            a3 = plot(timeArray, errorArray(:,1),timeArray, errorArray(:,2),timeArray, errorArray(:,3));
-            legend(a3, 'x', 'y', 'th');
+                figure(1);
+                title('Trajectory vs time')
+                a1 = plot(timeArray, refArray(:,1), timeArray, realArray(:,1),timeArray, refArray(:,2), timeArray, realArray(:,2),timeArray, refArray(:,3), timeArray, realArray(:,3));
+                legend(a1, 'ref x', 'real x', 'ref y', 'real y', 'ref th', 'real th');
+                figure(2);
+                title('Position graph')
+                a2 = plot(refArray(:,1), refArray(:,2), realArray(:,1), realArray(:,2));
+                legend(a2, 'ref', 'real');
+                figure(3);
+                title('Error vs Time');
+                a3 = plot(timeArray, errorArray(:,1),timeArray, errorArray(:,2),timeArray, errorArray(:,3));
+                legend(a3, 'x', 'y', 'th');
         end
     end
     methods(Static)
