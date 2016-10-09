@@ -166,7 +166,7 @@ classdef cubicSpiral < handle
             persistent a1T a2T b1T b2T r1T r2T;
                     
             if(isempty(inited))
-                load('cubicSpirals2mm_015rads','a1Tab','a2Tab','b1Tab','b2Tab','r1Tab','r2Tab');
+                load('cubicSpirals','a1Tab','a2Tab','b1Tab','b2Tab','r1Tab','r2Tab');
                 inited = true;
                 a1T = a1Tab;a2T = a2Tab;b1T = b1Tab;b2T = b2Tab;r1T = r1Tab;r2T = r2Tab;
             end
@@ -452,7 +452,7 @@ classdef cubicSpiral < handle
         end
         
         function V  = getVAtTime(obj,t)
-            if( t < obj.timeArray(1))
+            if( t < obj.timeArray(1) || t>=obj.timeArray(end))
                 V = 0.0;
             else
                 V  = interp1(obj.timeArray,obj.VArray,t,'pchip','extrap');  
@@ -460,7 +460,7 @@ classdef cubicSpiral < handle
         end
             
         function w  = getwAtTime(obj,t)
-            if(t < obj.timeArray(1))
+            if(t < obj.timeArray(1) || t>=obj.timeArray(end))
                 w = 0.0;
             else
                 w  = interp1(obj.timeArray,obj.wArray,t,'pchip','extrap');  

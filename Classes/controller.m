@@ -125,9 +125,9 @@ classdef controller
         function [eV, eW] = computeError(ePose)
             ePos = [ePose(1); ePose(2)];
             eb = ePose(3);
-            kx = 0.55;
-            ky = 0.55;
-            kb = 0.0060;
+            kx = 0.65;
+            ky = 0.45;
+            kb = 0.0020;
 
             k = [kx, 0; 0, ky];
             u = k * ePos;

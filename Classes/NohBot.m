@@ -54,7 +54,7 @@ classdef NohBot<handle
         %% Initialization
         function obj = NohBot()
             close all;
-            rosshutdown();
+            %rosshutdown();
             pause(0.1);
             
             obj.rasp = raspbot();
@@ -126,6 +126,10 @@ classdef NohBot<handle
         
         function laserOff(obj)
             obj.rasp.stopLaser();
+        end
+        
+        function stop(obj)
+            obj.rasp.stop();
         end
 
     end
