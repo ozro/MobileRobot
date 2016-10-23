@@ -5,6 +5,7 @@ classdef mrplSystem<handle
     properties
         robot
         feedback
+        plot
         pose
         finalPose
         timeArray
@@ -15,9 +16,10 @@ classdef mrplSystem<handle
     end
     
     methods 
-        function obj = mrplSystem(Nobot,feedback)
+        function obj = mrplSystem(Nobot,feedback, plot)
             obj.robot = Nobot;
             obj.feedback = feedback;
+            obj.plot = plot;
             obj.pose = zeros(1,3);
             obj.finalPose = zeros(1,3);
                         
@@ -106,7 +108,6 @@ classdef mrplSystem<handle
 
                 ePoseW = refPoseW - realPoseW;
 
-                ePoseW
                 th = refPoseW(3);
                 H = [cos(th), sin(th); -sin(th), cos(th)];
                 ePosW = [ePoseW(1); ePoseW(2)];
@@ -162,23 +163,23 @@ classdef mrplSystem<handle
             obj.robot.stop();
 
 
+            if(obj.plot)
+                figure(1);
+                plot(-obj.refArray(1:obj.index-1,2), obj.refArray(1:obj.index-1,1), -obj.realArray(1:obj.index-1,2), obj.realArray(1:obj.index-1,1));
+                p = gcf;
+                n = int2str((p.get('Number')+1)/2);
+                title(strcat('Position Graph(', n, ')'));
+                legend('ref','real');
+                xlabel('x (m)');
+                ylabel('y (m)');
 
-            figure(1);
-            plot(-obj.refArray(1:obj.index-1,2), obj.refArray(1:obj.index-1,1), -obj.realArray(1:obj.index-1,2), obj.realArray(1:obj.index-1,1));
-            p = gcf;
-            n = int2str((p.get('Number')+1)/2);
-            title(strcat('Position Graph(', n, ')'));
-            legend('ref','real');
-            xlabel('x (m)');
-            ylabel('y (m)');
-
-            figure(2);
-            plot(obj.timeArray(1:obj.index-1), obj.errorArray(1:obj.index-1,1),obj.timeArray(1:obj.index-1), obj.errorArray(1:obj.index-1,2),obj.timeArray(1:obj.index-1),obj.errorArray(1:obj.index-1,3));
-            title(strcat('Error vs Time(', n, ')'));
-            legend('x', 'y', 'th'); 
-            xlabel('time (s)');
-            ylabel('error (m)');
-
+                figure(2);
+                plot(obj.timeArray(1:obj.index-1), obj.errorArray(1:obj.index-1,1),obj.timeArray(1:obj.index-1), obj.errorArray(1:obj.index-1,2),obj.timeArray(1:obj.index-1),obj.errorArray(1:obj.index-1,3));
+                title(strcat('Error vs Time(', n, ')'));
+                legend('x', 'y', 'th'); 
+                xlabel('time (s)');
+                ylabel('error (m)');
+            end
          %  plot(obj.timeArray(1:obj.index-1),obj.refArray(1:obj.index-1,1),obj.timeArray(1:obj.index-1),obj.realArray(1:obj.index-1,1));
             
             obj.pose = obj.finalPose;

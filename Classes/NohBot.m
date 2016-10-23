@@ -4,7 +4,8 @@ classdef NohBot<handle
     properties
         %% Final parameters
         width = 8.9/100;
-        
+        length = 6/100;
+        palletL = 4.4/100;
         delay = 0.2;
         
         %delay = 0.575;
@@ -64,7 +65,6 @@ classdef NohBot<handle
 
             global encoderData;
             global encoderTime;
-            global laserData;
             global laserTime;
             global sTime;
 
@@ -75,7 +75,6 @@ classdef NohBot<handle
             encoderData = enc;
             encoderTime = sTime;
 
-            %laserData = obj.rasp.laser.LatestMessage.Ranges;
             laserTime = sTime;
 
             obj.rasp.encoders.NewMessageFcn =@EncoderListener;

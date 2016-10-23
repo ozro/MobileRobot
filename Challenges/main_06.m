@@ -1,5 +1,5 @@
-robot = NohBot();
-system = mrplSystem(robot,false);
+%robot = NohBot();
+system = mrplSystem(robot,false, false);
 system.executeTrajectoryToRelativePose(0.25,0.25,0,1);
 pause(3)
 system.executeTrajectoryToRelativePose(-0.5,-0.5,-pi()/2,1);
