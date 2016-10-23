@@ -207,7 +207,7 @@ classdef mrplSystem<handle
         end
         
         function executeTrajectoryToRelativePose(obj,x,y,th,sgn)
-            curve = cubicSpiral.planTrajectory(x,y,th,sgn);
+            curve = cubicSpiral.planTrajectory(x * sgn,y,th,sgn);
             curve.planVelocities(0.25);
             obj.executeTrajectory(curve);
         end
