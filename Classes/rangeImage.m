@@ -53,7 +53,7 @@ classdef rangeImage
                     Inertia = [Ixx, Ixy;Ixy,Iyy]/size(goodRange,1);
                     lambda = eig(Inertia);
                     lambda = sqrt(lambda) * 1000.0;
-                    lambda
+
                     if(lambda(1) < 1.3)
                         xPos = xbar;
                         yPos = ybar;
