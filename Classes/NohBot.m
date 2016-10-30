@@ -4,8 +4,8 @@ classdef NohBot<handle
     properties
         %% Final parameters
         width = 8.9/100;
-        length = 6/100;
-        palletL = 4.4/100;
+        offset = 10/100;
+        thoffset = 5 * pi/180;
         delay = 0.2;
         
         %delay = 0.575;

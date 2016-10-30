@@ -18,7 +18,7 @@ classdef rangeImage
             allX = cos(thArray).*rangeImg;
             allY = sin(thArray).*rangeImg;
             
-            for i = 1:numel(rangeImg)
+            for i = 1:size(rangeImg, 1)
                 r1 = rangeImg(i);
                 th1 = thArray(i);
                 
@@ -27,7 +27,7 @@ classdef rangeImage
                 goodRange = rangeImg(filter);
                 goodTh = thArray(filter);
                 
-                if(numel(goodRange)>6)
+                if(size(goodRange, 1)>6)
                     ranges = goodRange;
                     ths = goodTh;
                     
@@ -40,15 +40,17 @@ classdef rangeImage
                     px = x - xbar;
                     py = y - ybar;
                     
-                    d = sqrt((max(px)-min(px))^2 + (max(py)-min(py))^2)
+                    d = sqrt((max(px)-min(px))^2 + (max(py)-min(py))^2);
                     if(d>14/100)
                         continue;
+                    else
+                        d
                     end
                     
                     Ixx = px' * px;
                     Iyy = py' * py;
                     Ixy = -px' * py;
-                    Inertia = [Ixx, Ixy;Ixy,Iyy]/numel(goodRange);
+                    Inertia = [Ixx, Ixy;Ixy,Iyy]/size(goodRange,1);
                     lambda = eig(Inertia);
                     lambda = sqrt(lambda) * 1000.0;
                     lambda
