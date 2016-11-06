@@ -114,7 +114,7 @@ classdef NohBot<handle
         
         function moveAng(obj, vel, angVel)
             [vl, vr] = obj.angVelToWheel(vel, angVel);
-            sendVelocity(obj.rasp, vl, vr);
+            obj.move(vl, vr);
             pause(0.001);
         end
         

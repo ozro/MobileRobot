@@ -89,12 +89,11 @@ classdef LineMapLocalizer < handle
         end
         
         function [success, outPose] = refinePose(obj, inPose, modelPts, maxIters)            
-            dt = 0.01;
+            %outPose = inPose;
+            dt = 0.015;
             epsilon = 0.001;
             ids = obj.throwOutliers(inPose, modelPts);
-            worldPts = inPose.bToA() * modelPts;
-            worldPts(:,ids) = [];
-            modelPts = inPose.aToB() * worldPts;
+            modelPts(:,ids) = [];
             
             for i=1:maxIters
                 [e, J] = obj.getJacobian(inPose,modelPts);
@@ -111,7 +110,11 @@ classdef LineMapLocalizer < handle
                 xlim([-0.5, 1.5]);
                 ylim([-0.5, 1.5]);
                 title('Scan Matching');
-            end         
+            end   
+%             temp = isnan(inPose.getPoseVec());
+%             if ~temp(1)
+%                 outPose = inPose;
+%             end
             outPose = inPose;
             success = true;
         end
