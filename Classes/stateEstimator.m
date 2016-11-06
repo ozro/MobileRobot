@@ -34,6 +34,9 @@ classdef stateEstimator < handle
             dt = encoderTime - obj.prevT;
             dEnc = encoderData - obj.prevEnc;
             
+            if(dt == 0)
+                return;
+            end
             v = dEnc / dt;
             V = (v(1)+v(2))/2;
             p = obj.odoPose.getPoseVec();
@@ -61,8 +64,7 @@ classdef stateEstimator < handle
             y = y + V*sin(th)*dt;
             th = th + angVel*dt/2;
             
-            obj.fusePose = pose(x,y,th);
-            
+            obj.fusePose = pose(x,y,th);            
         end
         
         function processRangeImage(obj)
@@ -83,7 +85,7 @@ classdef stateEstimator < handle
 
             [success, finalPose] = obj.LML.refinePose(obj.fusePose, modelPts, 15);
             if success
-                [x,y,th] = obj.fusePose.getPoseVec();
+                [x,y,th] = obj.fusePose.getPoseVec()
                 [fx,fy,fth] = finalPose.getPoseVec();
                 dth = atan2(sin(fth-th),cos(fth-th));
                 obj.fusePose = [fx-x, fy-y, dth]*0.25+[x, y, th];

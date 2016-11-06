@@ -70,25 +70,26 @@ classdef LineMapLocalizer < handle
         
         function [errPlus0,J] = getJacobian(obj,poseIn,modelPts)
             % Computes the gradient of the error function
-
+            poseIn.getPoseVec()
             errPlus0 = fitError(obj,poseIn,modelPts);
 
             eps = 0.001;
-            dp = [eps ; 0.0 ; 0.0];
-            newPose = pose(poseIn.getPoseVec+dp);
+            dp = [eps; 0.0; 0.0];
+            newPose = pose(poseIn.getPoseVec()+dp);
 
             % Fill me in?
             parX = fitError(obj,newPose,modelPts);
-            dp = [0.0;eps;0.0];
-            newPose = pose(poseIn.getPoseVec+dp);
+            dp = [0.0; eps; 0.0];
+            newPose = pose(poseIn.getPoseVec()+dp);
             parY = fitError(obj,newPose,modelPts);
-            dp = [0.0;0.0;eps];
-            newPose = pose(poseIn.getPoseVec+dp);
+            dp = [0.0; 0.0; eps];
+            newPose = pose(poseIn.getPoseVec()+dp);
             parZ = fitError(obj,newPose,modelPts);
             J= ([parX,parY,parZ]-errPlus0) ./ eps;
         end
         
-        function [success, outPose] = refinePose(obj, inPose, modelPts, maxIters)            
+        function [success, outPose] = refinePose(obj, inPose, modelPts, maxIters)
+            inPose.getPoseVec()
             %outPose = inPose;
             dt = 0.015;
             epsilon = 0.001;
@@ -102,8 +103,8 @@ classdef LineMapLocalizer < handle
                     break;
                 end
                 inPose = pose((inPose.getPoseVec()' - J * dt)');
-                worldPts = inPose.bToA() * modelPts;
-                p = inPose.getPoseVec();
+%                 worldPts = inPose.bToA() * modelPts;
+%                 p = inPose.getPoseVec();
                 
 %                 g1 = [-5,5,12*0.0254, 12*0.0254 , -5, 5, 24*0.0254, 24*0.0254];
 %                 g2 = [12*0.0254, 12*0.0254, -5, 5, 24*0.0254, 24*0.0254, -5, 5];

@@ -6,7 +6,7 @@ classdef mrplSystem<handle
         robot
         feedback
         plot
-        pose
+        startPose
         finalPose
         timeArray
         refArray
@@ -20,8 +20,8 @@ classdef mrplSystem<handle
             obj.robot = Nobot;
             obj.feedback = feedback;
             obj.plot = plot;
-            obj.pose = pose;
-            obj.finalPose = zeros(1,3);
+            obj.startPose = pose;
+            obj.finalPose = pose;
                         
             obj.timeArray = zeros(10000,1);
             obj.refArray = zeros(10000, 3);
@@ -61,8 +61,8 @@ classdef mrplSystem<handle
             prevB = b;
             prevt = 0;
             
-            tran = [cos(obj.pose(3)), -sin(obj.pose(3)), obj.pose(1); 
-                    sin(obj.pose(3)), cos(obj.pose(3)), obj.pose(2); 0,0,1];
+            tran = [cos(obj.startPose(3)), -sin(obj.startPose(3)), obj.startPose(1); 
+                    sin(obj.startPose(3)), cos(obj.startPose(3)), obj.startPose(2); 0,0,1];
 
             while(t<tf + 0.25)
                 if(t == 0)
@@ -104,7 +104,7 @@ classdef mrplSystem<handle
                 realPoseW = [x, y, b]';
                 refPoseR = getPoseAtTime(curve,t-obj.robot.delay);
                 refPoseW = tran * [refPoseR(1); refPoseR(2); 1];
-                refPoseW(3) = refPoseR(3) + obj.pose(3);
+                refPoseW(3) = refPoseR(3) + obj.startPose(3);
 
                 ePoseW = refPoseW - realPoseW;
 
@@ -182,7 +182,7 @@ classdef mrplSystem<handle
             end
          %  plot(obj.timeArray(1:obj.index-1),obj.refArray(1:obj.index-1,1),obj.timeArray(1:obj.index-1),obj.realArray(1:obj.index-1,1));
             
-            obj.pose = obj.finalPose;
+            obj.startPose = obj.finalPose;
         end
         
         function executeTrajectorySE(obj,curve)
@@ -193,7 +193,7 @@ classdef mrplSystem<handle
             global sTime
             global encoderTime
             
-            est = stateEstimator(pose(obj.pose), obj.robot);
+            est = stateEstimator(pose(obj.startPose), obj.robot);
            
             
             if(obj.index == 1) 
@@ -210,8 +210,8 @@ classdef mrplSystem<handle
             prevB = b;
             prevt = 0;
             
-            tran = [cos(obj.pose(3)), -sin(obj.pose(3)), obj.pose(1); 
-                    sin(obj.pose(3)), cos(obj.pose(3)), obj.pose(2); 0,0,1];
+            tran = [cos(obj.startPose(3)), -sin(obj.startPose(3)), obj.startPose(1); 
+                    sin(obj.startPose(3)), cos(obj.startPose(3)), obj.startPose(2); 0,0,1];
 
             while(t<tf + 0.25)
                 realT = encoderTime-sTime;
@@ -225,11 +225,12 @@ classdef mrplSystem<handle
 
                 est.processOdometryData();
                 est.processRangeImage();
-               
+                clc
+                est.fusePose.getPoseVec()
                 realPoseW = est.fusePose.getPoseVec(); 
                 refPoseR = getPoseAtTime(curve,t-obj.robot.delay);
                 refPoseW = tran * [refPoseR(1); refPoseR(2); 1];
-                refPoseW(3) = refPoseR(3) + obj.pose(3);
+                refPoseW(3) = refPoseR(3) + obj.startPose(3);
 
                 ePoseW = refPoseW - realPoseW;
 
@@ -278,8 +279,7 @@ classdef mrplSystem<handle
                     angvel = refangvel;
                 end
                 obj.robot.moveAng(vel, angvel);
-                
-                obj.timeArray(obj.index) = realT - sTime;
+                obj.timeArray(obj.index) = realT;
                 obj.realArray(obj.index, :) = realPoseW;
                 obj.refArray(obj.index, :) = refPoseW;
                 obj.errorArray(obj.index, :) = ePoseR;
@@ -307,7 +307,7 @@ classdef mrplSystem<handle
             end
          %  plot(obj.timeArray(1:obj.index-1),obj.refArray(1:obj.index-1,1),obj.timeArray(1:obj.index-1),obj.realArray(1:obj.index-1,1));
             
-            obj.pose = obj.finalPose;
+            obj.startPose = obj.finalPose;
         end
         function executeTrajectoryToAbsPose(obj,tarX,tarY,tarTh,sgn)
             x = obj.finalPose(1);
@@ -333,7 +333,7 @@ classdef mrplSystem<handle
         function executeTrajectoryToRelativePose(obj,x,y,th,sgn)
             curve = cubicSpiral.planTrajectory(x * sgn,y,th,sgn);
             curve.planVelocities(0.25);
-            obj.executeTrajectory(curve);
+            obj.executeTrajectorySE(curve);
         end
     end
 end
