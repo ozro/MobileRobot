@@ -16,11 +16,11 @@ classdef mrplSystem<handle
     end
     
     methods 
-        function obj = mrplSystem(Nobot,feedback, plot, pose)
+        function obj = mrplSystem(Nobot,feedback, plot)
             obj.robot = Nobot;
             obj.feedback = feedback;
             obj.plot = plot;
-            obj.pose = pose;
+            obj.pose = zeros(1,3);
             obj.finalPose = zeros(1,3);
                         
             obj.timeArray = zeros(10000,1);
@@ -190,11 +190,15 @@ classdef mrplSystem<handle
             start = tic;
             
             tf = getTrajectoryDuration(curve);
-            global sTime
-            global encoderTime
+
+            global encoderData;
+            global encoderTime;
+            global sTime;
+
+            est = stateEstimator(obj.pose, obj.robot);
             
-            est = stateEstimator(pose(obj.pose), obj.robot);
-           
+            prevEnc = encoderData;
+            prevrealT = encoderTime;
             
             if(obj.index == 1) 
                 x = 0;
@@ -205,6 +209,9 @@ classdef mrplSystem<handle
                 y = obj.realArray(obj.index-1, 2);
                 b = obj.realArray(obj.index-1, 3);
             end
+            prevV = 0;
+            prevW = 0;
+
             
             prevPos = [x; y];
             prevB = b;
@@ -214,7 +221,6 @@ classdef mrplSystem<handle
                     sin(obj.pose(3)), cos(obj.pose(3)), obj.pose(2); 0,0,1];
 
             while(t<tf + 0.25)
-                realT = encoderTime-sTime;
                 if(t == 0)
                     t = toc(start);
                     continue;
@@ -224,9 +230,9 @@ classdef mrplSystem<handle
                 prevt = t;
 
                 est.processOdometryData();
-                est.processRangeImage();
+                est.processFuseData();
+                est.processImageData();
                
-                realPoseW = est.fusePose.getPoseVec(); 
                 refPoseR = getPoseAtTime(curve,t-obj.robot.delay);
                 refPoseW = tran * [refPoseR(1); refPoseR(2); 1];
                 refPoseW(3) = refPoseR(3) + obj.pose(3);
@@ -336,5 +342,6 @@ classdef mrplSystem<handle
             obj.executeTrajectory(curve);
         end
     end
+    
 end
 

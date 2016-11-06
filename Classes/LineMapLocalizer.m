@@ -94,29 +94,29 @@ classdef LineMapLocalizer < handle
             epsilon = 0.001;
             ids = obj.throwOutliers(inPose, modelPts);
             modelPts(:,ids) = [];
-            
+            success = false;
             for i=1:maxIters
                 [e, J] = obj.getJacobian(inPose,modelPts);
                 if(e<epsilon)
+                    success = true;
                     break;
                 end
                 inPose = pose((inPose.getPoseVec()' - J * dt)');
                 worldPts = inPose.bToA() * modelPts;
                 p = inPose.getPoseVec();
                 
-                g1 = [-5,5,12*0.0254, 12*0.0254 , -5, 5, 24*0.0254, 24*0.0254];
-                g2 = [12*0.0254, 12*0.0254, -5, 5, 24*0.0254, 24*0.0254, -5, 5];
-                plot(obj.lines_p1, obj.lines_p2, '-.ok', g1, g2, ':ob', worldPts(1,:), worldPts(2,:), 'm*', p(1), p(2), 'sr');      
-                xlim([-0.5, 1.5]);
-                ylim([-0.5, 1.5]);
-                title('Scan Matching');
+%                 g1 = [-5,5,12*0.0254, 12*0.0254 , -5, 5, 24*0.0254, 24*0.0254];
+%                 g2 = [12*0.0254, 12*0.0254, -5, 5, 24*0.0254, 24*0.0254, -5, 5];
+%                 plot(obj.lines_p1, obj.lines_p2, '-.ok', g1, g2, ':ob', worldPts(1,:), worldPts(2,:), 'm*', p(1), p(2), 'sr');      
+%                 xlim([-0.5, 1.5]);
+%                 ylim([-0.5, 1.5]);
+%                 title('Scan Matching');
             end   
 %             temp = isnan(inPose.getPoseVec());
 %             if ~temp(1)
 %                 outPose = inPose;
 %             end
             outPose = inPose;
-            success = true;
         end
     end
     
