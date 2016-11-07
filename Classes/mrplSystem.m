@@ -5,7 +5,7 @@ classdef mrplSystem<handle
     properties
         robot
         feedback
-        plot
+        plotflag
         startPose
         finalPose
         timeArray
@@ -13,13 +13,15 @@ classdef mrplSystem<handle
         realArray
         errorArray
         index
+        est
     end
     
     methods 
-        function obj = mrplSystem(Nobot,feedback, plot, pose)
+        function obj = mrplSystem(Nobot,est, feedback, plotflag, pose)
             obj.robot = Nobot;
+            obj.est = est;
             obj.feedback = feedback;
-            obj.plot = plot;
+            obj.plotflag = plotflag;
             obj.startPose = pose;
             obj.finalPose = pose;
                         
@@ -159,11 +161,12 @@ classdef mrplSystem<handle
                 obj.refArray(obj.index, :) = refPoseW;
                 obj.errorArray(obj.index, :) = ePoseR;
                 obj.index = obj.index +1;
+                pause(0.1);
             end
             obj.robot.stop();
 
 
-            if(obj.plot)
+            if(obj.plotflag)
                 figure(1);
                 plot(-obj.refArray(1:obj.index-1,2), obj.refArray(1:obj.index-1,1), -obj.realArray(1:obj.index-1,2), obj.realArray(1:obj.index-1,1));
                 p = gcf;
@@ -185,16 +188,13 @@ classdef mrplSystem<handle
             obj.startPose = obj.finalPose;
         end
         
-        function executeTrajectorySE(obj,curve)
+        function executeTrajectorySE(obj,curve)            
             t = 0;
             start = tic;
             
             tf = getTrajectoryDuration(curve);
             global sTime
-            global encoderTime
-            
-            est = stateEstimator(pose(obj.startPose), obj.robot);
-           
+            global encoderTime           
             
             if(obj.index == 1) 
                 x = 0;
@@ -223,11 +223,9 @@ classdef mrplSystem<handle
                 dt = t- prevt;
                 prevt = t;
 
-                est.processOdometryData();
-                est.processRangeImage();
-                clc
-                est.fusePose.getPoseVec()
-                realPoseW = est.fusePose.getPoseVec(); 
+                obj.est.processOdometryData();
+                obj.est.processRangeImage();
+                realPoseW = obj.est.fusePose.getPoseVec(); 
                 refPoseR = getPoseAtTime(curve,t-obj.robot.delay);
                 refPoseW = tran * [refPoseR(1); refPoseR(2); 1];
                 refPoseW(3) = refPoseR(3) + obj.startPose(3);
@@ -288,7 +286,7 @@ classdef mrplSystem<handle
             obj.robot.stop();
 
 
-            if(obj.plot)
+            if(obj.plotflag)
                 figure(1);
                 plot(-obj.refArray(1:obj.index-1,2), obj.refArray(1:obj.index-1,1), -obj.realArray(1:obj.index-1,2), obj.realArray(1:obj.index-1,1));
                 p = gcf;
@@ -333,7 +331,7 @@ classdef mrplSystem<handle
         function executeTrajectoryToRelativePose(obj,x,y,th,sgn)
             curve = cubicSpiral.planTrajectory(x * sgn,y,th,sgn);
             curve.planVelocities(0.25);
-            obj.executeTrajectorySE(curve);
+            obj.executeTrajectory(curve);
         end
     end
 end

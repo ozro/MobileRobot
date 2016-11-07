@@ -31,40 +31,40 @@ classdef stateEstimator < handle
             global encoderData;
             global encoderTime;
             
-            dt = encoderTime - obj.prevT;
-            dEnc = encoderData - obj.prevEnc;
+            t = encoderTime;
+            enc = encoderData;
+            dt = t - obj.prevT;
+            dEnc = enc - obj.prevEnc;
             
             if(dt == 0)
                 return;
             end
+            
+            obj.prevT = t;
+            obj.prevEnc = enc;
+            
             v = dEnc / dt;
-            V = (v(1)+v(2))/2;
+            
             p = obj.odoPose.getPoseVec();
             x = p(1);
             y = p(2);
             th = p(3);
-            angVel = obj.nohbot.wheelToAngVel(v(1), v(2));
+            [V, angVel] = obj.nohbot.wheelToAngVel(v(1), v(2));
             th = th + angVel*dt/2;
-            
             x = x + V*cos(th)*dt;
             y = y + V*sin(th)*dt;
             th = th + angVel*dt/2;
-            
             obj.odoPose = pose(x,y,th);
 
-            p = obj.fusePose.getPoseVec()';
-
+            p = obj.fusePose.getPoseVec();
             x = p(1);
             y = p(2);
             th = p(3);
-            angVel = obj.nohbot.wheelToAngVel(v(1), v(2));
             th = th + angVel*dt/2;
-            
             x = x + V*cos(th)*dt;
             y = y + V*sin(th)*dt;
             th = th + angVel*dt/2;
-            
-            obj.fusePose = pose(x,y,th);            
+            obj.fusePose = pose(x,y,th);
         end
         
         function processRangeImage(obj)
@@ -82,13 +82,19 @@ classdef stateEstimator < handle
             x = cosd(indices).*rangeImg;
             y = sind(indices).*rangeImg;
             modelPts = [x';y';ones(1,size(indices, 1))];
-
+            
             [success, finalPose] = obj.LML.refinePose(obj.fusePose, modelPts, 15);
             if success
-                [x,y,th] = obj.fusePose.getPoseVec()
-                [fx,fy,fth] = finalPose.getPoseVec();
+                p = obj.fusePose.getPoseVec();
+                x = p(1);
+                y = p(2);
+                th = p(3);
+                p = finalPose.getPoseVec();
+                fx = p(1);
+                fy = p(2);
+                fth = p(3);
                 dth = atan2(sin(fth-th),cos(fth-th));
-                obj.fusePose = [fx-x, fy-y, dth]*0.25+[x, y, th];
+                obj.fusePose = pose((fx-x)*0.25+x, (fy-y)*0.25+y, 0.25*dth+th);
             end
         end
        

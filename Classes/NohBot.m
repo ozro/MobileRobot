@@ -108,7 +108,7 @@ classdef NohBot<handle
 
         %% Command Wrappers
         function move(obj, leftVel, rightVel)
-            sendVelocity(obj.rasp, leftVel, rightVel);
+            sendVelocity(obj.rasp, rightVel, leftVel);
             pause(0.001);
         end
         

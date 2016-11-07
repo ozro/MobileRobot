@@ -70,7 +70,6 @@ classdef LineMapLocalizer < handle
         
         function [errPlus0,J] = getJacobian(obj,poseIn,modelPts)
             % Computes the gradient of the error function
-            poseIn.getPoseVec()
             errPlus0 = fitError(obj,poseIn,modelPts);
 
             eps = 0.001;
@@ -89,7 +88,6 @@ classdef LineMapLocalizer < handle
         end
         
         function [success, outPose] = refinePose(obj, inPose, modelPts, maxIters)
-            inPose.getPoseVec()
             %outPose = inPose;
             dt = 0.015;
             epsilon = 0.001;
@@ -98,6 +96,11 @@ classdef LineMapLocalizer < handle
             success = false;
             for i=1:maxIters
                 [e, J] = obj.getJacobian(inPose,modelPts);
+                temp = isnan(inPose.getPoseVec());
+                if ~temp(1)
+                    success = false;
+                    break;
+                end
                 if(e<epsilon)
                     success = true;
                     break;
