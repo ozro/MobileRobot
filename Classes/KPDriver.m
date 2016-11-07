@@ -21,19 +21,19 @@ classdef KPDriver
          if(key ~= false)
              if(strcmp(key,'uparrow'))
                  disp('up');
-                robot.sendVelocity(Vmax,Vmax);
+                robot.move(Vmax,Vmax);
              elseif(strcmp(key,'downarrow'))
                  disp('down');
-                robot.sendVelocity(-Vmax,-Vmax);
+                robot.move(-Vmax,-Vmax);
              elseif(strcmp(key,'leftarrow'))
                  disp('left');
-                 robot.sendVelocity(Vmax,Vmax+dV);
+                 robot.move(Vmax,Vmax+dV);
              elseif(strcmp(key,'rightarrow'))
                  disp('right');
-                robot.sendVelocity(Vmax+dV,Vmax);
+                robot.move(Vmax+dV,Vmax);
              elseif(strcmp(key,'s'))
                  disp('stop');
-                 robot.sendVelocity(0.0,0.0);
+                 robot.move(0.0,0.0);
              end;
          end;
      end

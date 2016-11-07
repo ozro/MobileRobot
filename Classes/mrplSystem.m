@@ -6,8 +6,7 @@ classdef mrplSystem<handle
         robot
         feedback
         plotflag
-        startPose
-        finalPose
+        refPoseW
         timeArray
         refArray
         realArray
@@ -22,8 +21,7 @@ classdef mrplSystem<handle
             obj.est = est;
             obj.feedback = feedback;
             obj.plotflag = plotflag;
-            obj.startPose = pose;
-            obj.finalPose = pose;
+            obj.refPoseW = pose;
                         
             obj.timeArray = zeros(10000,1);
             obj.refArray = zeros(10000, 3);
@@ -105,12 +103,12 @@ classdef mrplSystem<handle
 
                 realPoseW = [x, y, b]';
                 refPoseR = getPoseAtTime(curve,t-obj.robot.delay);
-                refPoseW = tran * [refPoseR(1); refPoseR(2); 1];
-                refPoseW(3) = refPoseR(3) + obj.startPose(3);
+                obj.refPoseW = tran * [refPoseR(1); refPoseR(2); 1];
+                obj.refPoseW(3) = refPoseR(3) + obj.startPose(3);
 
-                ePoseW = refPoseW - realPoseW;
+                ePoseW = obj.refPoseW - realPoseW;
 
-                th = refPoseW(3);
+                th = obj.refPoseW(3);
                 H = [cos(th), sin(th); -sin(th), cos(th)];
                 ePosW = [ePoseW(1); ePoseW(2)];
                 ePosR = H*ePosW;
@@ -158,7 +156,7 @@ classdef mrplSystem<handle
                 
                 obj.timeArray(obj.index) = realT - sTime;
                 obj.realArray(obj.index, :) = realPoseW;
-                obj.refArray(obj.index, :) = refPoseW;
+                obj.refArray(obj.index, :) = obj.refPoseW;
                 obj.errorArray(obj.index, :) = ePoseR;
                 obj.index = obj.index +1;
                 pause(0.1);
@@ -184,63 +182,54 @@ classdef mrplSystem<handle
                 ylabel('error (m)');
             end
          %  plot(obj.timeArray(1:obj.index-1),obj.refArray(1:obj.index-1,1),obj.timeArray(1:obj.index-1),obj.realArray(1:obj.index-1,1));
-            
-            obj.startPose = obj.finalPose;
         end
         
         function executeTrajectorySE(obj,curve)            
-            t = 0;
             start = tic;
+            t = toc(start);
             
             tf = getTrajectoryDuration(curve);
             global sTime
             global encoderTime           
-            
-            if(obj.index == 1) 
-                x = 0;
-                y = 0;
-                b = 0;
-            else
-                x = obj.realArray(obj.index-1, 1);
-                y = obj.realArray(obj.index-1, 2);
-                b = obj.realArray(obj.index-1, 3);
-            end
-            
-            prevPos = [x; y];
-            prevB = b;
+
             prevt = 0;
             
-            tran = [cos(obj.startPose(3)), -sin(obj.startPose(3)), obj.startPose(1); 
-                    sin(obj.startPose(3)), cos(obj.startPose(3)), obj.startPose(2); 0,0,1];
-
-            while(t<tf + 0.25)
-                realT = encoderTime-sTime;
+            tran = [cos(obj.refPoseW(3)), -sin(obj.refPoseW(3)), obj.refPoseW(1); 
+                    sin(obj.refPoseW(3)), cos(obj.refPoseW(3)), obj.refPoseW(2); 0,0,1];
+            startTh = obj.refPoseW(3);
+                
+            prevEPos = [0; 0];
+            prevB = 0;
+            
+            while(t<tf + 01)
+                realdT = encoderTime-sTime;
+                t = toc(start);
                 if(t == 0)
-                    t = toc(start);
                     continue;
                 end
-                t = toc(start);
                 dt = t- prevt;
                 prevt = t;
 
                 obj.est.processOdometryData();
                 obj.est.processRangeImage();
                 realPoseW = obj.est.fusePose.getPoseVec(); 
-                refPoseR = getPoseAtTime(curve,t-obj.robot.delay);
-                refPoseW = tran * [refPoseR(1); refPoseR(2); 1];
-                refPoseW(3) = refPoseR(3) + obj.startPose(3);
+                if(t - obj.robot.delay <= tf)
+                    refPoseR = getPoseAtTime(curve,t - obj.robot.delay);
+                    obj.refPoseW = tran * [refPoseR(1); refPoseR(2); 1];
+                    obj.refPoseW(3) = refPoseR(3) + startTh;
+                end
 
-                ePoseW = refPoseW - realPoseW;
+                ePoseW = obj.refPoseW - realPoseW;
 
-                th = refPoseW(3);
+                th = realPoseW(3);
                 H = [cos(th), sin(th); -sin(th), cos(th)];
                 ePosW = [ePoseW(1); ePoseW(2)];
                 ePosR = H*ePosW;
-                ePoseR = [ePosR(1), ePosR(2), ePoseW(3)];
+                ePoseR = [ePosR(1), ePosR(2 ), ePoseW(3)];
                 if(obj.feedback)
                     eb = ePoseR(3);
-                    kx = 0.005;
-                    ky = 0.005;
+                    kx = 0.075;
+                    ky = 0.010;
                     kb = 0.0015;
 
                     k = [kx, 0; 0, ky];
@@ -248,14 +237,14 @@ classdef mrplSystem<handle
                     eV = u(1);
                     eW = u(2) + eb*kb;
                     
-                    dPos = (ePosR-prevPos)/dt;
-                    prevPos = ePosR;
+                    dPos = (ePosR-prevEPos)/dt;
+                    prevEPos = ePosR;
                     deb = (eb-prevB)/dt;
                     prevB = eb;
                     
-                    kdx = 0.0;
-                    kdy = 0.0;
-                    kdb = 0.0;
+                    kdx = 0.010;
+                    kdy = 0.005;
+                    kdb = 0.001;
                     kd = [kdx, 0; 0, kdy];
                     du = kd * dPos;
                     eV = eV + du(1);
@@ -277,62 +266,54 @@ classdef mrplSystem<handle
                     angvel = refangvel;
                 end
                 obj.robot.moveAng(vel, angvel);
-                obj.timeArray(obj.index) = realT;
+                obj.timeArray(obj.index) = realdT;
                 obj.realArray(obj.index, :) = realPoseW;
-                obj.refArray(obj.index, :) = refPoseW;
+                obj.refArray(obj.index, :) = obj.refPoseW;
                 obj.errorArray(obj.index, :) = ePoseR;
                 obj.index = obj.index +1;
             end
             obj.robot.stop();
 
-
             if(obj.plotflag)
                 figure(1);
-                plot(-obj.refArray(1:obj.index-1,2), obj.refArray(1:obj.index-1,1), -obj.realArray(1:obj.index-1,2), obj.realArray(1:obj.index-1,1));
-                p = gcf;
-                n = int2str((p.get('Number')+1)/2);
-                title(strcat('Position Graph(', n, ')'));
-                legend('ref','real');
-                xlabel('x (m)');
-                ylabel('y (m)');
-
-                figure(2);
                 plot(obj.timeArray(1:obj.index-1), obj.errorArray(1:obj.index-1,1),obj.timeArray(1:obj.index-1), obj.errorArray(1:obj.index-1,2),obj.timeArray(1:obj.index-1),obj.errorArray(1:obj.index-1,3));
                 title(strcat('Error vs Time(', n, ')'));
                 legend('x', 'y', 'th'); 
                 xlabel('time (s)');
                 ylabel('error (m)');
+                
+                figure(2);
+                plot(obj.refArray(1:obj.index-1,1), obj.refArray(1:obj.index-1,2), obj.realArray(1:obj.index-1,1), obj.realArray(1:obj.index-1,2));
+                p = gcf;
+                n = int2str((p.get('Number')+1)/2);
+                title(strcat('Position Graph(', n, ')'));
+                legend('Reference Trajectory','Sensed Trajectory');
+                xlabel('x (m)');
+                ylabel('y (m)');
             end
-         %  plot(obj.timeArray(1:obj.index-1),obj.refArray(1:obj.index-1,1),obj.timeArray(1:obj.index-1),obj.realArray(1:obj.index-1,1));
-            
-            obj.startPose = obj.finalPose;
         end
         function executeTrajectoryToAbsPose(obj,tarX,tarY,tarTh,sgn)
-            x = obj.finalPose(1);
-            y = obj.finalPose(2);
-            th = obj.finalPose(3);
+            x = obj.refPoseW(1);
+            y = obj.refPoseW(2);
+            th = obj.refPoseW(3);
+            
             xp = -(x*cos(th) + y*sin(th));
             yp = (x*sin(th) - y*cos(th));
             tran = [cos(th), sin(th), xp; -sin(th), cos(th), yp; 0, 0, 1];
             
-            relpose = tran*[tarX; tarY; 1];
-            relAng = tarTh - th;
+            relpos = tran*[tarX; tarY; 1];
+            relTh = tarTh - th;
             
-            relX = relpose(1);
-            relY = relpose(2);
-            relTh = relAng;
-            
-            obj.finalPose = [tarX, tarY, tarTh];
-
-            
+            relX = relpos(1);
+            relY = relpos(2);
+                        
             executeTrajectoryToRelativePose(obj, relX, relY, relTh, sgn);
         end
         
         function executeTrajectoryToRelativePose(obj,x,y,th,sgn)
-            curve = cubicSpiral.planTrajectory(x * sgn,y,th,sgn);
+            curve = cubicSpiral.planTrajectory(x,y,th,sgn);
             curve.planVelocities(0.25);
-            obj.executeTrajectory(curve);
+            obj.executeTrajectorySE(curve);
         end
     end
 end
-

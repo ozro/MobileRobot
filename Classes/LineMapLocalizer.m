@@ -90,14 +90,14 @@ classdef LineMapLocalizer < handle
         function [success, outPose] = refinePose(obj, inPose, modelPts, maxIters)
             %outPose = inPose;
             dt = 0.015;
-            epsilon = 0.001;
+            epsilon = 0.008;
             ids = obj.throwOutliers(inPose, modelPts);
             modelPts(:,ids) = [];
             success = false;
             for i=1:maxIters
                 [e, J] = obj.getJacobian(inPose,modelPts);
                 temp = isnan(inPose.getPoseVec());
-                if ~temp(1)
+                if temp(1)
                     success = false;
                     break;
                 end
