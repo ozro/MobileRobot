@@ -184,7 +184,8 @@ classdef mrplSystem<handle
          %  plot(obj.timeArray(1:obj.index-1),obj.refArray(1:obj.index-1,1),obj.timeArray(1:obj.index-1),obj.realArray(1:obj.index-1,1));
         end
         
-        function executeTrajectorySE(obj,curve)            
+        function executeTrajectorySE(obj,curve)
+            obj.refPoseW
             start = tic;
             t = toc(start);
             
@@ -201,7 +202,7 @@ classdef mrplSystem<handle
             prevEPos = [0; 0];
             prevB = 0;
             
-            while(t<tf + 01)
+            while(t<tf + 2)
                 realdT = encoderTime-sTime;
                 t = toc(start);
                 if(t == 0)
@@ -228,9 +229,9 @@ classdef mrplSystem<handle
                 ePoseR = [ePosR(1), ePosR(2 ), ePoseW(3)];
                 if(obj.feedback)
                     eb = ePoseR(3);
-                    kx = 0.075;
+                    kx = 0.070;
                     ky = 0.010;
-                    kb = 0.0015;
+                    kb = 0.015;
 
                     k = [kx, 0; 0, ky];
                     u = k * ePosR;
@@ -242,9 +243,9 @@ classdef mrplSystem<handle
                     deb = (eb-prevB)/dt;
                     prevB = eb;
                     
-                    kdx = 0.010;
-                    kdy = 0.005;
-                    kdb = 0.001;
+                    kdx = 0.005;
+                    kdy = 0.001;
+                    kdb = 0.005;
                     kd = [kdx, 0; 0, kdy];
                     du = kd * dPos;
                     eV = eV + du(1);
@@ -277,7 +278,7 @@ classdef mrplSystem<handle
             if(obj.plotflag)
                 figure(1);
                 plot(obj.timeArray(1:obj.index-1), obj.errorArray(1:obj.index-1,1),obj.timeArray(1:obj.index-1), obj.errorArray(1:obj.index-1,2),obj.timeArray(1:obj.index-1),obj.errorArray(1:obj.index-1,3));
-                title(strcat('Error vs Time(', n, ')'));
+                title('Error vs Time');
                 legend('x', 'y', 'th'); 
                 xlabel('time (s)');
                 ylabel('error (m)');
@@ -285,8 +286,7 @@ classdef mrplSystem<handle
                 figure(2);
                 plot(obj.refArray(1:obj.index-1,1), obj.refArray(1:obj.index-1,2), obj.realArray(1:obj.index-1,1), obj.realArray(1:obj.index-1,2));
                 p = gcf;
-                n = int2str((p.get('Number')+1)/2);
-                title(strcat('Position Graph(', n, ')'));
+                title('Position Graph');
                 legend('Reference Trajectory','Sensed Trajectory');
                 xlabel('x (m)');
                 ylabel('y (m)');

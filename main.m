@@ -1,13 +1,13 @@
 %Lab 10
 robot = NohBot();
 robot.laserOn();
-est = stateEstimator(pose(0.6096, 0.6096, pi/2), robot);
-system = mrplSystem(robot,est,true,true, [0.6096, 0.6096, pi/2]);
-system.executeTrajectoryToAbsPose(0.3048, 0.9144, pi/2, 1);
-pause(3);
-system.executeTrajectoryToAbsPose(0.9144,0.3048,0, 1);
-pause(3);
-system.executeTrajectoryToAbsPose(0.6090, 0.6096, pi/2, 1);
+est = stateEstimator(pose(0.6096, 0.6096 - 0.045, pi/2), robot);
+system = mrplSystem(robot,est,true,true, [0.6096, 0.6096 - 0.045, pi/2]);
+system.executeTrajectoryToAbsPose(0.3048, 0.9144 - 0.025, pi/2, 1);
+pause(20);
+system.executeTrajectoryToAbsPose(0.9144 + 0.0125,0.3048 + 0.045, pi/15, 1);
+pause(20);
+system.executeTrajectoryToAbsPose(0.6090 - 0.02, 0.6096 - 0.045, pi/2, 1);
 shut
 
 
