@@ -1,40 +1,36 @@
-%Lab 10
+%Lab 11
+%clear all;
 robot = NohBot();
+pause(0.2);
 robot.laserOn();
-est = stateEstimator(pose(0.6096, 0.6096 - 0.045, pi/2), robot);
-system = mrplSystem(robot,est,true,true, [0.6096, 0.6096 - 0.045, pi/2]);
-system.executeTrajectoryToAbsPose(0.3048, 0.9144 - 0.025, pi/2, 1);
-pause(20);
-system.executeTrajectoryToAbsPose(0.9144 + 0.0125,0.3048 + 0.045, pi/15, 1);
-pause(20);
-system.executeTrajectoryToAbsPose(0.6090 - 0.02, 0.6096 - 0.045, pi/2, 1);
-shut
+robot.forkDown();
 
+startPose = [0.6096, 0.6096, pi/2];
 
-% robot = NohBot();
-% robot.laserOn();
-% h = figure;
-% KPDriver(h);
-% vGain = 5;
-% 
-% p1 = [0,      0; 
-%       0, 1.2192];
-% p2 = [1.2192, 0; 
-%       0, 0];
-% LML = LineMapLocalizer(p1, p2,0.01, 0.001, 0.0005);
-% robotPose = pose(24*0.0254, 24*0.0254, pi/2);
-% est = stateEstimator(robotPose, robot);
-% 
-% while(true)
-%     est.processOdometryData();
-%     est.processRangeImage();
-%     KPDriver.drive(robot, vGain);
-%     fusePose = est.fusePose.getPoseVec();
-%     odoPose = est.odoPose.getPoseVec();
-%     plot(fusePose(1), fusePose(2), 'ob', odoPose(1), odoPose(2), 'r*');
-%     xlim([0, 1.5]);
-%     ylim([0, 1.5]);
-%     title('Fuse Pose');
-%     pause(0.05);
-% end
-% 
+image = rangeImage();
+while(true)
+    est = stateEstimator(pose(startPose(1), startPose(2), startPose(3)), robot);
+    system = mrplSystem(robot,est, true, true, startPose);
+
+    approachSail(system, image,est, robot.offset);
+    approachSail(system,image, est, robot.offset - 10/100);
+    robot.laserOff();
+    
+    pause(0.1);
+    system.moveRel(0.06);
+    pause(0.1);
+    robot.forkUp();
+    pause(1);
+    robot.forkDown();
+    pause(1);
+    system.moveRel(-0.06);
+    pause(0.5);
+    system.turnTh(pi);
+    startPose = est.fusePose.getPoseVec()';
+    beep;
+    pause(7);
+    beep;
+    robot.laserOn();
+    
+end
+

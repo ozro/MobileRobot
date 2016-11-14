@@ -213,7 +213,7 @@ classdef mrplSystem<handle
 
                 obj.est.processOdometryData();
                 obj.est.processRangeImage();
-                realPoseW = obj.est.fusePose.getPoseVec(); 
+                realPoseW = obj.est.fusePose.getPoseVec();
                 if(t - obj.robot.delay <= tf)
                     refPoseR = getPoseAtTime(curve,t - obj.robot.delay);
                     obj.refPoseW = tran * [refPoseR(1); refPoseR(2); 1];
@@ -229,9 +229,9 @@ classdef mrplSystem<handle
                 ePoseR = [ePosR(1), ePosR(2 ), ePoseW(3)];
                 if(obj.feedback)
                     eb = ePoseR(3);
-                    kx = 0.070;
-                    ky = 0.010;
-                    kb = 0.015;
+                    kx = 0.005;
+                    ky = 0.005;
+                    kb = 0.001;
 
                     k = [kx, 0; 0, ky];
                     u = k * ePosR;
@@ -243,9 +243,9 @@ classdef mrplSystem<handle
                     deb = (eb-prevB)/dt;
                     prevB = eb;
                     
-                    kdx = 0.005;
-                    kdy = 0.001;
-                    kdb = 0.005;
+                    kdx = 0.001;
+                    kdy = 0.0005;
+                    kdb = 0.0005;
                     kd = [kdx, 0; 0, kdy];
                     du = kd * dPos;
                     eV = eV + du(1);
@@ -285,17 +285,21 @@ classdef mrplSystem<handle
                 
                 figure(2);
                 plot(obj.refArray(1:obj.index-1,1), obj.refArray(1:obj.index-1,2), obj.realArray(1:obj.index-1,1), obj.realArray(1:obj.index-1,2));
-                p = gcf;
                 title('Position Graph');
                 legend('Reference Trajectory','Sensed Trajectory');
                 xlabel('x (m)');
                 ylabel('y (m)');
             end
         end
-        function executeTrajectoryToAbsPose(obj,tarX,tarY,tarTh,sgn)
-            x = obj.refPoseW(1);
-            y = obj.refPoseW(2);
-            th = obj.refPoseW(3);
+        function executeTrajectoryToAbsPose(obj,tarX,tarY,tarTh,sgn,vel)
+%             x = obj.refPoseW(1);
+%             y = obj.refPoseW(2);
+%             th = obj.refPoseW(3);
+
+            refPose = obj.est.fusePose.getPoseVec();
+            x = refPose(1);
+            y = refPose(2);
+            th = refPose(3);
             
             xp = -(x*cos(th) + y*sin(th));
             yp = (x*sin(th) - y*cos(th));
@@ -307,13 +311,31 @@ classdef mrplSystem<handle
             relX = relpos(1);
             relY = relpos(2);
                         
-            executeTrajectoryToRelativePose(obj, relX, relY, relTh, sgn);
+            executeTrajectoryToRelativePose(obj, relX, relY, relTh, sgn, vel);
         end
         
-        function executeTrajectoryToRelativePose(obj,x,y,th,sgn)
+        function executeTrajectoryToRelativePose(obj,x,y,th,sgn, vel)
             curve = cubicSpiral.planTrajectory(x,y,th,sgn);
-            curve.planVelocities(0.25);
+            curve.planVelocities(vel);
             obj.executeTrajectorySE(curve);
+        end
+        
+        function moveRel(obj, d)
+            obj.robot.move(d * 2, d * 2);
+            pause(0.5);
+            obj.robot.move(0, 0);
+        end
+        
+        function turnTh(obj, dth)
+            obj.robot.move(-dth * obj.robot.width / 2, dth * obj.robot.width / 2);
+            fPose = obj.est.fusePose.getPoseVec();
+            th = fPose(3) + dth;
+            if(th >= 2 * pi)
+                th = th - 2*pi;
+            end
+            obj.est.fusePose = pose(fPose(1), fPose(2), th);
+            pause(1);
+            obj.robot.move(0, 0);
         end
     end
 end

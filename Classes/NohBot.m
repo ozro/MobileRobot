@@ -4,7 +4,7 @@ classdef NohBot<handle
     properties
         %% Final parameters
         width = 8.9/100;
-        offset = 10/100;
+        offset = 21/100;
         thoffset = 5 * pi/180;
         delay = 0.2;
         
@@ -125,6 +125,14 @@ classdef NohBot<handle
         
         function laserOff(obj)
             obj.rasp.stopLaser();
+        end
+        
+        function forkDown(obj)
+            obj.rasp.forksDown();
+        end
+        
+        function forkUp(obj)
+            obj.rasp.forksUp();
         end
         
         function stop(obj)

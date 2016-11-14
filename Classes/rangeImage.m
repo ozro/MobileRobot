@@ -7,7 +7,7 @@ classdef rangeImage
             th = 0;
             goodX = zeros(0, 0);
             goodY = zeros(0,0);
-
+            
             pixels = size(rangeImg,1);
             goodOnes = rangeImg > 0.06 & rangeImg < 4.0;
             rangeImg = rangeImg(goodOnes);
@@ -23,8 +23,8 @@ classdef rangeImage
                 th1 = thArray(i);
                 
                 
-                filter = sqrt(r1^2 + rangeImg.^2 - 2*r1*cos(thArray - th1).*rangeImg) <= 0.20;
-                goodRange = rangeImg(filter);
+                filter = sqrt(r1^2 + rangeImg.^2 - 2*r1*cos(thArray - th1).*rangeImg) <= 0.18;
+                goodRange = rangeImg(filter)
                 goodTh = thArray(filter);
                 
                 if(size(goodRange, 1)>6)
@@ -41,10 +41,10 @@ classdef rangeImage
                     py = y - ybar;
                     
                     d = sqrt((max(px)-min(px))^2 + (max(py)-min(py))^2);
-                    if(d>14/100)
+                    if(d>15/100)
                         continue;
                     else
-                        d
+                        d;
                     end
                     
                     Ixx = px' * px;
@@ -54,7 +54,7 @@ classdef rangeImage
                     lambda = eig(Inertia);
                     lambda = sqrt(lambda) * 1000.0;
 
-                    if(lambda(1) < 1.3)
+                    if(lambda(1) < 2)
                         xPos = xbar;
                         yPos = ybar;
                         th = atan2(2*Ixy, Iyy-Ixx)/2;
