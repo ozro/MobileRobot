@@ -10,11 +10,11 @@ startPose = [0.6096, 0.6096, pi/2];
 image = rangeImage();
 while(true)
     est = stateEstimator(pose(startPose(1), startPose(2), startPose(3)), robot);
-    system = mrplSystem(robot,est, true, true, startPose);
+    system = mrplSystem(robot,est, true, false, startPose);
 
-    approachSail(system, image,est, robot.offset);
-    approachSail(system,image, est, robot.offset - 10/100);
-    robot.laserOff();
+    approachSail(system, image,est, robot.offset - 10/100);
+    %approachSail(system,image, est, robot.offset - 10/100);
+    %robot.laserOff();
     
     pause(0.1);
     system.moveRel(0.06);
@@ -30,7 +30,7 @@ while(true)
     beep;
     pause(7);
     beep;
-    robot.laserOn();
+    %robot.laserOn();
     
 end
 
