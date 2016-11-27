@@ -321,9 +321,14 @@ classdef mrplSystem<handle
         end
         
         function moveRel(obj, d)
-            obj.robot.move(d * 2, d * 2);
-            pause(0.5);
+            
+            obj.robot.move(0.2, 0.2);
+            pause(d / 0.2);
             obj.robot.move(0, 0);
+            
+            fpose = obj.est.fusePose.getPoseVec();
+            th = fpose(3);
+            obj.est.fusePose = pose(fpose(1) + d*cos(th), fpose(2) + d*sin(th), th);
         end
         
         function turnTh(obj, dth)
@@ -336,6 +341,21 @@ classdef mrplSystem<handle
             obj.est.fusePose = pose(fPose(1), fPose(2), th);
             pause(1);
             obj.robot.move(0, 0);
+        end
+        
+        function blind(obj, robPose, objPose, v)
+            %robPose = obj.est.fusePose.getPoseVec()
+            relX = objPose(1) - robPose(1);
+            relY = objPose(2) - robPose(2) - 35/100;
+            relTh = atan2(relY, relX) - robPose(3);
+            %th = atan2(relY, relX) - pi/2;
+            d = sqrt(relX^2 + relY^2)
+            
+            obj.turnTh(relTh);
+            pause(0.1)
+            obj.moveRel(v,d)
+            %obj.turnTh(pi/2 - atan2(relY, relX));
+            %pause(0.1)
         end
     end
 end

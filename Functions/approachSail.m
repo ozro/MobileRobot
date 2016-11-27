@@ -5,7 +5,8 @@ function approachSail(system, image,est, offset)
     searching = true;
     
     while(searching)
-    
+        ranges = laserRanges;
+        
         [xbar, ybar, th, xArray, yArray, allX, allY] = image.findLineCandidate(ranges);
 
 %         plot(0, 0, 'ok',-1*allY, allX, '.b', -1*yArray, xArray, '.r');
@@ -25,11 +26,7 @@ function approachSail(system, image,est, offset)
     if(xbar< 0)
         th = th - pi;
     end
-    if(offset < 15/100)
-        thoffset = th + 22 * pi/180;
-    else
-        thoffset = th + 10 * pi/180;
-    end
+    thoffset = th + -5 * pi/180;
     xbar = xbar - (offset)*cos(thoffset);
     ybar = ybar - (offset)*sin(thoffset);
     
@@ -43,7 +40,6 @@ function approachSail(system, image,est, offset)
     if(numel(yArray) == 0)
         beep;
     else
-
         system.executeTrajectoryToAbsPose(tarPos(1), tarPos(2), tarth, sgn, 0.25);
     end
 end

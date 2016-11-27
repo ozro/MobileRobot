@@ -4,7 +4,7 @@ classdef NohBot<handle
     properties
         %% Final parameters
         width = 8.9/100;
-        offset = 21/100;
+        offset = 11/100;
         thoffset = 5 * pi/180;
         delay = 0.2;
         
@@ -129,10 +129,12 @@ classdef NohBot<handle
         
         function forkDown(obj)
             obj.rasp.forksDown();
+            pause(0.5);
         end
         
         function forkUp(obj)
             obj.rasp.forksUp();
+            pause(0.5);
         end
         
         function stop(obj)

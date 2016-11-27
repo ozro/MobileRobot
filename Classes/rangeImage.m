@@ -23,8 +23,8 @@ classdef rangeImage
                 th1 = thArray(i);
                 
                 
-                filter = sqrt(r1^2 + rangeImg.^2 - 2*r1*cos(thArray - th1).*rangeImg) <= 0.18;
-                goodRange = rangeImg(filter)
+                filter = sqrt(r1^2 + rangeImg.^2 - 2*r1*cos(thArray - th1).*rangeImg) <= 0.20;
+                goodRange = rangeImg(filter);
                 goodTh = thArray(filter);
                 
                 if(size(goodRange, 1)>6)
@@ -44,7 +44,7 @@ classdef rangeImage
                     if(d>15/100)
                         continue;
                     else
-                        d;
+                        p = 'sail is too long'
                     end
                     
                     Ixx = px' * px;
@@ -61,7 +61,11 @@ classdef rangeImage
                         goodX = x;
                         goodY = y;
                         return;
+                    else
+                        p = 'lambda too large'
                     end
+                else
+                    p = 'range data too short'
                 end
             end
         end
