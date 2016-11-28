@@ -14,22 +14,19 @@ drop = [1.75*0.3048, 0.75*0.3048, -pi/2;
 
 image = rangeImage();
 est = stateEstimator(pose(startPose(1), startPose(2), startPose(3)), robot);
-system = mrplSystem(robot,est, true, false, startPose);
+system = mrplSystem(robot,est, true, true, startPose);
 for i = 1:3
     targetPose = target(i,:);
     dropPose = drop(i,:);
     pause(0.2)
     system.turnTh(pi)
-    pause(0.1);
+    pause(0.5);
 
-    est = stateEstimator(pose(startPose(1), startPose(2), -startPose(3)), robot);
-    system = mrplSystem(robot, est, true, false, -startPose);
-    system.executeTrajectoryToAbsPose(targetPose(1), targetPose(2) - 35/100, targetPose(3), 1, 0.25);
-
+    system.refPoseW = est.fusePose.getPoseVec()';
+    system.executeTrajectoryToAbsPose(targetPose(1), targetPose(2) - 35/100, targetPose(3), 1, 0.30, true);
+    system.refPoseW = est.fusePose.getPoseVec()';
     approachSail(system,image, est, robot.offset);
-
-    startPose = est.fusePose.getPoseVec()';
-
+    
     pause(0.1);
     system.moveRel(0.06);
     pause(0.5);
@@ -38,19 +35,21 @@ for i = 1:3
     system.moveRel(-0.06);
     pause(0.5);
     system.turnTh(pi);
-
-    est = stateEstimator(pose(startPose(1), startPose(2), -startPose(3)), robot);
-    system = mrplSystem(robot,est, true, false, -startPose);
-    system.executeTrajectoryToAbsPose(dropPose(1), dropPose(2), dropPose(3), 1, 0.25);
-    %startPose = est.fusePose.getPoseVec()';
-    startPose = dropPose;
+    pause(0.5);
+% 
+%     targetPose(3) = -targetPose(3);
+%     targetPose(2) = targetPose(2) - robot.offset/2;
+%     system.refPoseW = targetPose;
+    system.refPoseW = est.fusePose.getPoseVec()';
+    system.executeTrajectoryToAbsPose(dropPose(1), dropPose(2) + robot.offset, dropPose(3), 1, 0.10, true);
     
     system.moveRel(0.06);
     pause(0.2);
     robot.forkDown();
     pause(0.1);
-    system.moveRel(-0.06);
-    pause(0.5);
+    system.moveRel(-0.08);
+    pause(1);
+    beep
 end
 robot.move(0,0);
 robot.laserOff();

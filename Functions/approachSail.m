@@ -38,6 +38,6 @@ function approachSail(system, image,est, offset)
     if(numel(yArray) == 0)
         beep;
     else
-        system.executeTrajectoryToAbsPose(tarPos(1), tarPos(2), tarth, sgn, 0.25);
+        system.executeTrajectoryToAbsPose(tarPos(1), tarPos(2), tarth, sgn, 0.25, true);
     end
 end

@@ -184,8 +184,7 @@ classdef mrplSystem<handle
          %  plot(obj.timeArray(1:obj.index-1),obj.refArray(1:obj.index-1,1),obj.timeArray(1:obj.index-1),obj.realArray(1:obj.index-1,1));
         end
         
-        function executeTrajectorySE(obj,curve)
-            bo = obj.refPoseW
+        function executeTrajectorySE(obj,curve, SE)
             start = tic;
             t = toc(start);
             
@@ -212,7 +211,9 @@ classdef mrplSystem<handle
                 prevt = t;
 
                 obj.est.processOdometryData();
-                obj.est.processRangeImage();
+                if(SE) 
+                    obj.est.processRangeImage();
+                end
                 realPoseW = obj.est.fusePose.getPoseVec();
                 if(t - obj.robot.delay <= tf)
                     refPoseR = getPoseAtTime(curve,t - obj.robot.delay);
@@ -229,9 +230,9 @@ classdef mrplSystem<handle
                 ePoseR = [ePosR(1), ePosR(2 ), ePoseW(3)];
                 if(obj.feedback)
                     eb = ePoseR(3);
-                    kx = 0.005;
-                    ky = 0.005;
-                    kb = 0.001;
+                    kx = 0.05;
+                    ky = 5;
+                    kb = 0.5;
 
                     k = [kx, 0; 0, ky];
                     u = k * ePosR;
@@ -291,15 +292,19 @@ classdef mrplSystem<handle
                 ylabel('y (m)');
             end
         end
-        function executeTrajectoryToAbsPose(obj,tarX,tarY,tarTh,sgn,vel)
-%               x = obj.refPoseW(1);
-%               y = obj.refPoseW(2);
-%               th = obj.refPoseW(3);
+        function executeTrajectoryToAbsPose(obj,tarX,tarY,tarTh,sgn,vel, SE)
+            x = obj.refPoseW(1);
+            y = obj.refPoseW(2);
+            th = obj.refPoseW(3);
 
-            refPose = obj.est.fusePose.getPoseVec();
-            x = refPose(1);
-            y = refPose(2);
-            th = refPose(3);
+%             refPose = obj.est.fusePose.getPoseVec();
+%             x = refPose(1);
+%             y = refPose(2);
+%             th = refPose(3);
+            
+            bob = [x,y,th]
+            f = obj.est.fusePose.getPoseVec()
+            o = obj.est.odoPose.getPoseVec()
             
             xp = -(x*cos(th) + y*sin(th));
             yp = (x*sin(th) - y*cos(th));
@@ -311,33 +316,35 @@ classdef mrplSystem<handle
             relX = relpos(1);
             relY = relpos(2);
                         
-            executeTrajectoryToRelativePose(obj, relX, relY, relTh, sgn, vel);
+            executeTrajectoryToRelativePose(obj, relX, relY, relTh, sgn, vel, SE);
         end
         
-        function executeTrajectoryToRelativePose(obj,x,y,th,sgn, vel)
+        function executeTrajectoryToRelativePose(obj,x,y,th,sgn, vel, SE)
             curve = cubicSpiral.planTrajectory(x,y,th,sgn);
             curve.planVelocities(vel);
-            obj.executeTrajectorySE(curve);
+            obj.executeTrajectorySE(curve, SE);
         end
         
         function moveRel(obj, d)
             sgn = abs(d)/d;
-            obj.robot.move(sgn*0.1, sgn*0.1);
-            pause(d / 0.1);
+            obj.robot.move(sgn*0.05, sgn*0.05);
+            pause(d / 0.05);
             obj.robot.move(0, 0);
+            obj.est.processOdometryData();
+            obj.est.processRangeImage();
         end
         
         function turnTh(obj, dth)
             obj.robot.move(-dth * obj.robot.width / 2, dth * obj.robot.width / 2);
             pause(1-0.0025);
             obj.robot.move(0, 0);
-            fPose = obj.est.fusePose.getPoseVec();
-            th = fPose(3) + dth;
-            if(th >= 2 * pi)
-                th = th - 2*pi;
+            th = obj.refPoseW(3) + dth;
+            if(th >= pi)
+                th = pi - th;
             end
-            obj.est.fusePose = pose(fPose(1), fPose(2), th);
-            obj.refPoseW(3) = obj.refPoseW(3) + dth;
+            obj.est.processOdometryData();
+            obj.est.processRangeImage();
+            obj.refPoseW(3) = th;
         end
         
         function blind(obj, robPose, objPose, v)

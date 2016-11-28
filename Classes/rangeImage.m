@@ -74,11 +74,15 @@ classdef rangeImage
             end
             len = size(solutions, 1);
             if(len > 1)
+                minDist = 50;
                 for i = 1:len
-                    if(solutions(i,1)*preference > 0)
+                    dist = sqrt(solutions(i,1)^2 + solutions(i,2)^2);
+                    if( dist < minDist)
+                        minDist = dist;
                         xPos = solutions(i,1);
                         yPos = solutions(i,2);
                         th = solutions(i,3);
+                        return
                     end
                 end
             end

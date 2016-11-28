@@ -64,7 +64,9 @@ classdef stateEstimator < handle
             x = x + V*cos(th)*dt;
             y = y + V*sin(th)*dt;
             th = th + angVel*dt/2;
-            bob = [x, y, th]
+            if(th>pi)
+                th = pi-th;
+            end
             obj.fusePose = pose(x,y,th);
         end
         
@@ -95,9 +97,13 @@ classdef stateEstimator < handle
                 fy = p(2);
                 fth = p(3);
                 dth = angdiff(th, fth);
-                if(abs(fx- x) + abs(fy - y) < 0.75)
-                    k = 0.15;
-                    obj.fusePose = pose((fx-x)*k + x, (fy-y)*k +y, k*dth+th);
+                k = 0.10;
+                newTh = k*dth + th;
+                if(newTh>pi)
+                    newTh = pi-newTh;
+                end
+                if(abs(fx-x)*k < 0.6)
+                    obj.fusePose = pose((fx-x)*k + x, (fy-y)*k +y, newTh);
                 end
             end
         end
