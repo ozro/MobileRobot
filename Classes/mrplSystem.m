@@ -277,15 +277,20 @@ classdef mrplSystem<handle
             obj.robot.stop();
 
             if(obj.plotflag)
-                figure(1);
-                plot(obj.timeArray(1:obj.index-1), obj.errorArray(1:obj.index-1,1),obj.timeArray(1:obj.index-1), obj.errorArray(1:obj.index-1,2),obj.timeArray(1:obj.index-1),obj.errorArray(1:obj.index-1,3));
-                title('Error vs Time');
-                legend('x', 'y', 'th'); 
-                xlabel('time (s)');
-                ylabel('error (m)');
+%                 figure(2);
+%                 plot(obj.timeArray(1:obj.index-1), obj.errorArray(1:obj.index-1,1),obj.timeArray(1:obj.index-1), obj.errorArray(1:obj.index-1,2),obj.timeArray(1:obj.index-1),obj.errorArray(1:obj.index-1,3));
+%                 title('Error vs Time');
+%                 legend('x', 'y', 'th'); 
+%                 xlabel('time (s)');
+%                 ylabel('error (m)');
                 
-                figure(2);
-                plot(obj.refArray(1:obj.index-1,1), obj.refArray(1:obj.index-1,2), obj.realArray(1:obj.index-1,1), obj.realArray(1:obj.index-1,2));
+                figure(1);
+                
+                g1 = [-5,5,12*0.0254, 12*0.0254 , -5, 5, 24*0.0254, 24*0.0254, -5, 5, 36*0.0254, 36*0.0254];
+                g2 = [12*0.0254, 12*0.0254, -5, 5, 24*0.0254, 24*0.0254, -5, 5, 36*0.0254, 36*0.0254, -5, 5];
+                plot(obj.refArray(1:obj.index-1,1), obj.refArray(1:obj.index-1,2), obj.realArray(1:obj.index-1,1), obj.realArray(1:obj.index-1,2), g1, g2, ':ob');
+                xlim([0, 4*0.3048]);
+                ylim([0, 4*0.3048]);
                 title('Position Graph');
                 legend('Reference Trajectory','Sensed Trajectory');
                 xlabel('x (m)');
@@ -335,8 +340,8 @@ classdef mrplSystem<handle
         end
         
         function turnTh(obj, dth)
-            obj.robot.move(-dth * obj.robot.width / 2, dth * obj.robot.width / 2);
-            pause(1-0.0025);
+            obj.robot.move(-dth * obj.robot.width / 4, dth * obj.robot.width / 4);
+            pause(2-0.0015);
             obj.robot.move(0, 0);
             th = obj.refPoseW(3) + dth;
             if(th >= pi)

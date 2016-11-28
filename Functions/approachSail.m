@@ -7,13 +7,14 @@ function approachSail(system, image,est, offset)
         
         [xbar, ybar, th, xArray, yArray, allX, allY] = image.findLineCandidate(ranges, -1);
 
-%         plot(0, 0, 'ok',-1*allY, allX, '.b', -1*yArray, xArray, '.r');
-%         title('Robot Frame Laser Range Positions');
-%         legend('Robot', 'Other Points', 'Sail');
-%         xlabel('y (m)');
-%         ylabel('x (m)');
-%         xlim([-1.3, 1.3])
-%         ylim([-1.3, 1.3])
+        figure(2)
+        plot(0, 0, 'ok',-1*allY, allX, '.b', -1*yArray, xArray, '.r');
+        title('Robot Frame Laser Range Positions');
+        legend('Robot', 'Other Points', 'Sail');
+        xlabel('y (m)');
+        ylabel('x (m)');
+        xlim([-1.3, 1.3])
+        ylim([-1.3, 1.3])
     
         searching = abs(xbar) + abs(ybar) < 0.08;
         beep
@@ -38,6 +39,6 @@ function approachSail(system, image,est, offset)
     if(numel(yArray) == 0)
         beep;
     else
-        system.executeTrajectoryToAbsPose(tarPos(1), tarPos(2), tarth, sgn, 0.25, true);
+        system.executeTrajectoryToAbsPose(tarPos(1), tarPos(2), tarth, sgn, 0.15, true);
     end
 end

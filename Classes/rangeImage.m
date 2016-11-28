@@ -1,11 +1,11 @@
 classdef rangeImage
     
     methods
-        function [xPos, yPos, th, goodX, goodY, allX, allY] = findLineCandidate(~, rangeImg, preference)
+        function [xPos, yPos, th, goodX, goodY, allX, allY] = findLineCandidate(~, rangeImg, ~)
             xPos = 0;
             yPos = 0;
             th = 0;
-            solutions = [];
+            minDist = 1000;
             goodX = zeros(0, 0);
             goodY = zeros(0,0);
             
@@ -56,34 +56,20 @@ classdef rangeImage
                     lambda = sqrt(lambda) * 1000.0;
 
                     if(lambda(1) < 2)
-                        xPos = xbar;
-                        yPos = ybar;
-                        th = atan2(2*Ixy, Iyy-Ixx)/2;
-
-                        solutions = [solutions; [xPos, yPos, th]];
+                        dist = sqrt(xbar^2 + ybar^2);
+                        if(dist<minDist)
+                            xPos = xbar;
+                            yPos = ybar;
+                            th = atan2(2*Ixy, Iyy-Ixx)/2;
                             
-                        goodX = x;
-                        goodY = y;
-                        return;
+                            goodX = x;
+                            goodY = y;
+                        end
                     else
                         p = 'lambda too large';
                     end
                 else
                     p = 'range data too short';
-                end
-            end
-            len = size(solutions, 1);
-            if(len > 1)
-                minDist = 50;
-                for i = 1:len
-                    dist = sqrt(solutions(i,1)^2 + solutions(i,2)^2);
-                    if( dist < minDist)
-                        minDist = dist;
-                        xPos = solutions(i,1);
-                        yPos = solutions(i,2);
-                        th = solutions(i,3);
-                        return
-                    end
                 end
             end
         end

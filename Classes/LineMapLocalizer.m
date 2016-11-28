@@ -4,7 +4,7 @@ classdef LineMapLocalizer < handle
     % the map.
 
     properties(Constant)
-        maxErr = 0.05; % 5 cm
+        maxErr = 0.066; % 5 cm
         minPts = 5; % min # of points that must match
     end
 
@@ -88,6 +88,8 @@ classdef LineMapLocalizer < handle
         end
         
         function [success, outPose] = refinePose(obj, inPose, modelPts, maxIters)
+            original = inPose.getPoseVec()';
+            oPose = [original(1), original(2)];
             %outPose = inPose;
             dt = 0.015;
             epsilon = 0.008;
@@ -106,15 +108,16 @@ classdef LineMapLocalizer < handle
                     break;
                 end
                 inPose = pose((inPose.getPoseVec()' - J * dt)');
-%                 worldPts = inPose.bToA() * modelPts;
-%                 p = inPose.getPoseVec();
+                worldPts = inPose.bToA() * modelPts;
+                p = inPose.getPoseVec();
                 
-%                 g1 = [-5,5,12*0.0254, 12*0.0254 , -5, 5, 24*0.0254, 24*0.0254];
-%                 g2 = [12*0.0254, 12*0.0254, -5, 5, 24*0.0254, 24*0.0254, -5, 5];
-%                 plot(obj.lines_p1, obj.lines_p2, '-.ok', g1, g2, ':ob', worldPts(1,:), worldPts(2,:), 'm*', p(1), p(2), 'sr');      
-%                 xlim([-0.5, 1.5]);
-%                 ylim([-0.5, 1.5]);
-%                 title('Scan Matching');
+                figure(3)
+                g1 = [-5,5,12*0.0254, 12*0.0254 , -5, 5, 24*0.0254, 24*0.0254, -5, 5, 36*0.0254, 36*0.0254];
+                g2 = [12*0.0254, 12*0.0254, -5, 5, 24*0.0254, 24*0.0254, -5, 5, 36*0.0254, 36*0.0254, -5, 5];
+                plot(obj.lines_p1, obj.lines_p2, '-.ok', g1, g2, ':ob', worldPts(1,:), worldPts(2,:), 'm*', p(1), p(2), 'sr', oPose(1), oPose(2), '.b');      
+                xlim([-0.3048, 5*0.3048]);
+                ylim([-0.3048, 5*0.3048]);
+                title('Scan Matching');
             end   
 %             temp = isnan(inPose.getPoseVec());
 %             if ~temp(1)
