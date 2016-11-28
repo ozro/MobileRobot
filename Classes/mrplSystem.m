@@ -185,7 +185,7 @@ classdef mrplSystem<handle
         end
         
         function executeTrajectorySE(obj,curve)
-            obj.refPoseW
+            bo = obj.refPoseW
             start = tic;
             t = toc(start);
             
@@ -202,7 +202,7 @@ classdef mrplSystem<handle
             prevEPos = [0; 0];
             prevB = 0;
             
-            while(t<tf + 2)
+            while(t<tf + 0.5)
                 realdT = encoderTime-sTime;
                 t = toc(start);
                 if(t == 0)
@@ -292,9 +292,9 @@ classdef mrplSystem<handle
             end
         end
         function executeTrajectoryToAbsPose(obj,tarX,tarY,tarTh,sgn,vel)
-%             x = obj.refPoseW(1);
-%             y = obj.refPoseW(2);
-%             th = obj.refPoseW(3);
+%               x = obj.refPoseW(1);
+%               y = obj.refPoseW(2);
+%               th = obj.refPoseW(3);
 
             refPose = obj.est.fusePose.getPoseVec();
             x = refPose(1);
@@ -321,26 +321,23 @@ classdef mrplSystem<handle
         end
         
         function moveRel(obj, d)
-            
-            obj.robot.move(0.2, 0.2);
-            pause(d / 0.2);
+            sgn = abs(d)/d;
+            obj.robot.move(sgn*0.1, sgn*0.1);
+            pause(d / 0.1);
             obj.robot.move(0, 0);
-            
-            fpose = obj.est.fusePose.getPoseVec();
-            th = fpose(3);
-            obj.est.fusePose = pose(fpose(1) + d*cos(th), fpose(2) + d*sin(th), th);
         end
         
         function turnTh(obj, dth)
             obj.robot.move(-dth * obj.robot.width / 2, dth * obj.robot.width / 2);
+            pause(1-0.0025);
+            obj.robot.move(0, 0);
             fPose = obj.est.fusePose.getPoseVec();
             th = fPose(3) + dth;
             if(th >= 2 * pi)
                 th = th - 2*pi;
             end
             obj.est.fusePose = pose(fPose(1), fPose(2), th);
-            pause(1);
-            obj.robot.move(0, 0);
+            obj.refPoseW(3) = obj.refPoseW(3) + dth;
         end
         
         function blind(obj, robPose, objPose, v)
@@ -349,7 +346,7 @@ classdef mrplSystem<handle
             relY = objPose(2) - robPose(2) - 35/100;
             relTh = atan2(relY, relX) - robPose(3);
             %th = atan2(relY, relX) - pi/2;
-            d = sqrt(relX^2 + relY^2)
+            d = sqrt(relX^2 + relY^2);
             
             obj.turnTh(relTh);
             pause(0.1)

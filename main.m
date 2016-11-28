@@ -3,33 +3,57 @@ pause(0.2);
 robot.laserOn();
 robot.forkDown();
 
-startPose = [0.3048, 0.3048, -pi/2];
-targetPose = [0.3048 * 2, 4*0.3048, pi/2];
-dropPose = [0.3048 * 2.5, 0.3048, -pi/2];
+startPose = [0.75*0.3048,0.75*0.3048, -pi/2];
+
+target = [1*0.3048, 3.5*0.3048, pi/2;
+          2*0.3048, 3.5*0.3048, pi/2;
+          3*0.3048, 3.5*0.3048, pi/2];
+drop = [1.75*0.3048, 0.75*0.3048, -pi/2;
+        2.25*0.3048, 0.75*0.3048, -pi/2;
+        2.75*0.3048, 0.75*0.3048, -pi/2];
 
 image = rangeImage();
 est = stateEstimator(pose(startPose(1), startPose(2), startPose(3)), robot);
 system = mrplSystem(robot,est, true, false, startPose);
+for i = 1:3
+    targetPose = target(i,:);
+    dropPose = drop(i,:);
+    pause(0.2)
+    system.turnTh(pi)
+    pause(0.1);
 
-system.turnTh(pi);
-system.executeTrajectoryToAbsPose(targetPose(1), targetPose(2) - 30/100, targetPose(3), 1, 0.25);
+    est = stateEstimator(pose(startPose(1), startPose(2), -startPose(3)), robot);
+    system = mrplSystem(robot, est, true, false, -startPose);
+    system.executeTrajectoryToAbsPose(targetPose(1), targetPose(2) - 35/100, targetPose(3), 1, 0.25);
 
-%approachSail(system, image,est, robot.offset + 10/100);
-approachSail(system,image, est, robot.offset);
+    approachSail(system,image, est, robot.offset);
+
+    startPose = est.fusePose.getPoseVec()';
+
+    pause(0.1);
+    system.moveRel(0.06);
+    pause(0.5);
+    robot.forkUp();
+    pause(0.1);
+    system.moveRel(-0.06);
+    pause(0.5);
+    system.turnTh(pi);
+
+    est = stateEstimator(pose(startPose(1), startPose(2), -startPose(3)), robot);
+    system = mrplSystem(robot,est, true, false, -startPose);
+    system.executeTrajectoryToAbsPose(dropPose(1), dropPose(2), dropPose(3), 1, 0.25);
+    %startPose = est.fusePose.getPoseVec()';
+    startPose = dropPose;
+    
+    system.moveRel(0.06);
+    pause(0.2);
+    robot.forkDown();
+    pause(0.1);
+    system.moveRel(-0.06);
+    pause(0.5);
+end
+robot.move(0,0);
 robot.laserOff();
-
-pause(0.1);
-system.moveRel(0.06);
-pause(0.1);
-robot.forkUp();
-pause(0.1);
-system.moveRel(-0.06);
-pause(0.1);
-system.turnTh(pi);
-startPose = est.fusePose.getPoseVec()';
-est = stateEstimator(pose(startPose(1), startPose(2), startPose(3)), robot);
-system = mrplSystem(robot,est, true, false, startPose);
-system.executeTrajectoryToAbsPose(dropPose(1), dropPose(2), dropPose(3), 1, 0.25);
 
 % robot = NohBot();
 % pause(0.2)

@@ -1,13 +1,11 @@
 function approachSail(system, image,est, offset)
-    global laserRanges;
-    ranges = laserRanges;
-    
+    global laserRanges;    
     searching = true;
     
     while(searching)
         ranges = laserRanges;
         
-        [xbar, ybar, th, xArray, yArray, allX, allY] = image.findLineCandidate(ranges);
+        [xbar, ybar, th, xArray, yArray, allX, allY] = image.findLineCandidate(ranges, -1);
 
 %         plot(0, 0, 'ok',-1*allY, allX, '.b', -1*yArray, xArray, '.r');
 %         title('Robot Frame Laser Range Positions');
@@ -26,7 +24,7 @@ function approachSail(system, image,est, offset)
     if(xbar< 0)
         th = th - pi;
     end
-    thoffset = th + -5 * pi/180;
+    thoffset = th + 15 * pi/180;
     xbar = xbar - (offset)*cos(thoffset);
     ybar = ybar - (offset)*sin(thoffset);
     
