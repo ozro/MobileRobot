@@ -1,5 +1,5 @@
 function wait(est, t)
-    dt = 0.1;
+    dt = 0.2;
     beep
     for i= 1:t/dt
         est.processOdometryData();
@@ -7,5 +7,6 @@ function wait(est, t)
         pause(dt);
     end
     beep
+    return
 end
 

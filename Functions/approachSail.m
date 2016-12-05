@@ -20,12 +20,8 @@ function approachSail(system, image,est, offset)
         beep
         pause(1);
     end
-    
     sgn = 1;
-    if(xbar< 0)
-        th = th - pi;
-    end
-    thoffset = th + 15 * pi/180;
+    thoffset = th + 10* pi/180;
     xbar = xbar - (offset)*cos(thoffset);
     ybar = ybar - (offset)*sin(thoffset);
     
@@ -34,7 +30,7 @@ function approachSail(system, image,est, offset)
     rPose = est.fusePose.getPoseVec();
     rth = rPose(3);
     
-    tarth = rth + th;
+    tarth = rth + th - 5*pi/180;
     
     if(numel(yArray) == 0)
         beep;

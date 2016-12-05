@@ -111,18 +111,15 @@ classdef LineMapLocalizer < handle
                 worldPts = inPose.bToA() * modelPts;
                 p = inPose.getPoseVec();
                 
-                figure(3)
-                g1 = [-5,5,12*0.0254, 12*0.0254 , -5, 5, 24*0.0254, 24*0.0254, -5, 5, 36*0.0254, 36*0.0254];
-                g2 = [12*0.0254, 12*0.0254, -5, 5, 24*0.0254, 24*0.0254, -5, 5, 36*0.0254, 36*0.0254, -5, 5];
-                plot(obj.lines_p1, obj.lines_p2, '-.ok', g1, g2, ':ob', worldPts(1,:), worldPts(2,:), 'm*', p(1), p(2), 'sr', oPose(1), oPose(2), '.b');      
-                xlim([-0.3048, 5*0.3048]);
-                ylim([-0.3048, 5*0.3048]);
-                title('Scan Matching');
+%                 figure(3) 
+%                 g1 = [-5,5,12*0.0254, 12*0.0254 , -5, 5, 24*0.0254, 24*0.0254, -5, 5, 36*0.0254, 36*0.0254, -5, 5, 48*0.0254, 48*0.0254, -5, 5, 60 * 0.0254, 60*0.0254, -5, 5, 72 * 0.0254, 72*0.0254, -5, 5, 84*0.0254, 84*0.0254];
+%                 g2 = [12*0.0254, 12*0.0254, -5, 5, 24*0.0254, 24*0.0254, -5, 5, 36*0.0254, 36*0.0254, -5, 5, 48*0.0254, 48*0.0254, -5, 5, 60*0.0254, 60*0.0254, -5, 5, 72*0.0254, 72*0.0254, -5, 5, 84*0.0254, 84*0.0254, -5, 5];
+%                 plot(obj.lines_p1, obj.lines_p2, '-.ok', g1, g2, ':ob', worldPts(1,:), worldPts(2,:), 'm*', p(1), p(2), 'sr', oPose(1), oPose(2), '.b');
+%                 legend('Walls', '', '', 'Tiles', 'Range Image', 'Fused Pose', 'Odometry Pose'); 
+%                 xlim([-0.3048, 9*0.3048]);
+%                 ylim([-0.3048, 9*0.3048]);
+%                 title('Scan Matching');
             end   
-%             temp = isnan(inPose.getPoseVec());
-%             if ~temp(1)
-%                 outPose = inPose;
-%             end
             outPose = inPose;
         end
     end

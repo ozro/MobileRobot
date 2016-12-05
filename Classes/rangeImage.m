@@ -1,7 +1,7 @@
 classdef rangeImage
     
     methods
-        function [xPos, yPos, th, goodX, goodY, allX, allY] = findLineCandidate(~, rangeImg, ~)
+        function [xPos, yPos, th, goodX, goodY, allX, allY] = findLineCandidate(~, rangeImg, ~)            
             xPos = 0;
             yPos = 0;
             th = 0;
@@ -10,7 +10,7 @@ classdef rangeImage
             goodY = zeros(0,0);
             
             pixels = size(rangeImg,1);
-            goodOnes = rangeImg > 0.06 & rangeImg < 4.0;
+            goodOnes = rangeImg > 0.06 & rangeImg < 12 * 0.3048;
             rangeImg = rangeImg(goodOnes);
             indices = linspace(2, pixels + 1, pixels)';
             indices = indices(goodOnes);
@@ -43,9 +43,9 @@ classdef rangeImage
                     
                     d = sqrt((max(px)-min(px))^2 + (max(py)-min(py))^2);
                     if(d>15/100)
+                        p = 'sail is too long';
                         continue;
                     else
-                        p = 'sail is too long';
                     end
                     
                     Ixx = px' * px;
@@ -57,10 +57,11 @@ classdef rangeImage
 
                     if(lambda(1) < 2)
                         dist = sqrt(xbar^2 + ybar^2);
-                        if(dist<minDist)
+                        if(dist<minDist && ybar > 0)
                             xPos = xbar;
                             yPos = ybar;
                             th = atan2(2*Ixy, Iyy-Ixx)/2;
+                            minDist = dist;
                             
                             goodX = x;
                             goodY = y;

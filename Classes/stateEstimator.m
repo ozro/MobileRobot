@@ -13,10 +13,10 @@ classdef stateEstimator < handle
     
     methods
         function obj = stateEstimator(pose, nohbot)
-            p1 = [0,      0, 1.2192; 
-                  0, 1.2192, 1.2192];
-            p2 = [1.2192, 0, 1.2192; 
-                  0, 0, 0];
+            p1 = [       0,        0, 8*0.3048 ; 
+                         0, 8*0.3048, 8*0.3048];
+            p2 = [8*0.3048,        0, 8*0.3048 ; 
+                         0,        0,        0];
             obj.LML = LineMapLocalizer(p1, p2, 0.01, 0.001, 0.0005);
             global encoderData
             global encoderTime
@@ -78,7 +78,7 @@ classdef stateEstimator < handle
             rangeImg = laserRanges;
             range = 1:6:360;
             rangeImg = rangeImg(range');
-            goodOnes = rangeImg > 0.06 & rangeImg < 4.0;
+            goodOnes = rangeImg > 0.06 & rangeImg < 12*0.3048;
             rangeImg = rangeImg(goodOnes);
             indices = (1:6:360)';
             indices = indices(goodOnes);    
