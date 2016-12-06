@@ -81,12 +81,12 @@ classdef stateEstimator < handle
             goodOnes = rangeImg > 0.06 & rangeImg < 12*0.3048;
             rangeImg = rangeImg(goodOnes);
             indices = (1:6:360)';
-            indices = indices(goodOnes);    
+            indices = indices(goodOnes);
             x = cosd(indices).*rangeImg;
             y = sind(indices).*rangeImg;
             modelPts = [x';y';ones(1,size(indices, 1))];
             
-            [success, finalPose] = obj.LML.refinePose(obj.fusePose, modelPts, 15);
+            [success, finalPose] = obj.LML.refinePose(obj.fusePose, modelPts, 20);
             if success
                 p = obj.fusePose.getPoseVec();
                 x = p(1);
@@ -97,12 +97,12 @@ classdef stateEstimator < handle
                 fy = p(2);
                 fth = p(3);
                 dth = angdiff(th, fth);
-                k = 0.2;
+                k = 0.25;
                 newTh = k*dth + th;
                 if(newTh>pi)
                     newTh = pi-newTh;
                 end
-                if(abs(fx-x)*k < 0.6)
+                if(abs(fx-x)*k < 2)
                     obj.fusePose = pose((fx-x)*k + x, (fy-y)*k +y, newTh);
                 end
             end

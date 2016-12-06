@@ -57,7 +57,7 @@ classdef rangeImage
 
                     if(lambda(1) < 2)
                         dist = sqrt(xbar^2 + ybar^2);
-                        if(dist<minDist && ybar > 0)
+                        if(dist<minDist && xbar > 0)
                             xPos = xbar;
                             yPos = ybar;
                             th = atan2(2*Ixy, Iyy-Ixx)/2;
